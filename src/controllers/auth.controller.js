@@ -1,7 +1,7 @@
 import Search from "../utils/search.js";
 import { tokenGenerate } from "../utils/tokenGenerate.js";
 
-export const clientLogin= async(req) =>{
+export const clientLogin = async(req) =>{
     try{
         const {addressMailClient, passwordClient} = req.body;
         const loginClient = await Search.byEmail({addressMailClient})

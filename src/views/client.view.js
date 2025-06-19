@@ -1,6 +1,6 @@
 export const createAccountClientView = (result, res) => {
   if (!result.success) {
-    if (result.error === 'ZodError') {
+    if (result.error.name === 'ZodError') {
       return res.status(400).json({
         message: "Datos inválidos",
         errors: result.error.issues, 
