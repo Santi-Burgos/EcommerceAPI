@@ -11,7 +11,6 @@ class Client{
             const [resultClientQuery] =  await conn.query('INSERT INTO `client`(`nameClient`, `lastNameClient`, `addressMailClient`, `passwordClient`, `numberPhoneClient`) VALUES (?,?,?,?,?)', [nameClient, lastNameClient, addressMailClient, passwordClientHashed, numberPhoneClient]);
 
             const clientID = resultClientQuery.insertId;
-            console.log(clientID)
 
             await conn.query(
                 'INSERT INTO `imageclient`(`imgUrl`, `imgname`, `idClient`) VALUES (?,?,?)',
@@ -24,7 +23,12 @@ class Client{
             }
         }catch (error){
             await conn.rollback();
-            throw new Error("Error al crear el cliente: " + error.message);
+                
+            if (error.code === 'ER_DUP_ENTRY') {
+                throw new Error('El correo electrónico ya está registrado');
+            }
+            throw new Error('Error al crear el cliente: ' + error.message);
+            
         }finally{
             conn.release();
         }
