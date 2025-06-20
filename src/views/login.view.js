@@ -1,4 +1,4 @@
-import { cookies as cookiesOptions} from '../utils/cookies.js'
+import {cookies as cookiesOptions} from '../utils/cookies.js'
 
 export const loginClientView = (result, res) => {
   if (!result.success) {

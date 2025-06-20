@@ -34,9 +34,9 @@ class Client{
         }
     }
 
-    static async editClientAccount({clientToEdit, clientID}){
+    static async editClientAccount(clientToEdit, clientID){
         try{   
-            const fullDataToUpdate = { ...clientToEdit, idClient: clientID };
+            const fullDataToUpdate = { ...clientToEdit, idClient: clientID};
             const { query, values } = buildDynamicUpdateQuery('client', fullDataToUpdate, 'idClient');
             const result = await connection.query(query, values);
             return {
@@ -44,7 +44,7 @@ class Client{
             data: result
             };
         }catch(error){
-            throw new Error('Error al editar cliente'); 
+            throw new Error('Error al editar cliente' + error.message); 
         }
     }
 

@@ -1,4 +1,6 @@
 export function buildDynamicUpdateQuery(table, data, idField) {
+
+
   if (!data || typeof data !== 'object') {
     throw new Error('Invalid data object');
   }

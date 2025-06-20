@@ -62,8 +62,15 @@ export const editClientAccountController = async(req) =>{
         }
       }
     }
-    const clientID = req.user.clientId
-    const {clientToEdit} = validateEditAccount.data;
+    const clientID = req.user.idUser
+
+    let {passwordClient, ...rest} = validateEditClient.data
+
+    
+    if(passwordClient){
+       passwordClient =  await hashPassword(passwordClient);
+    }
+    const clientToEdit ={...rest, passwordClient}  
     const clientAccountUpdate = await Client.editClientAccount(clientToEdit, clientID);
     return{
       success: true,

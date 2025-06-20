@@ -2,11 +2,16 @@ import express from 'express';
 import http from 'http';
 import dotenv from 'dotenv';
 import router from './src/routes/client.router.js';
+import cookieParser from 'cookie-parser';
 dotenv.config();
 
 const app = express();
 
-app.use(express.json());
+
+app.use(
+    express.json(),
+    cookieParser()
+    );
 
 const server = http.createServer(app)
 

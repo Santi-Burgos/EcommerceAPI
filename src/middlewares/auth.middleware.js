@@ -1,7 +1,8 @@
-import { verifyToken } from '../utils/decodedUtil.js';
+import { verifyToken } from '../utils/decoded.js';
 
 export const authToken = async (req, res, next) => {
-    const token = req.cookies.access_token;
+
+    const token = req.cookies.accessToken;
 
     if (!token) {
         return res.status(401).json({
@@ -9,8 +10,6 @@ export const authToken = async (req, res, next) => {
             details: 'El token de acceso no está presente en las cookies',
         });
     }
-
-
 
     let decoded;
     try {
@@ -22,13 +21,13 @@ export const authToken = async (req, res, next) => {
         });
     }
 
-    if (!decoded || !decoded.id_user) {
+    if (!decoded || !decoded.idUser) {
         return res.status(401).json({
             message: 'Invalid token payload',
-            details: 'El token no contiene un id_user válido',
+            details: 'El token no contiene un ID válido',
         });
     }
 
     req.user = decoded;
-    next(); 
+    next();
 };
