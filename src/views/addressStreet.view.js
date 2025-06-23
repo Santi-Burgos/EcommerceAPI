@@ -6,7 +6,6 @@ export const createStreetAddressView = (result, res) =>{
                 errors: result.error.issues, 
             });
         }
-        console.log("RESULT EN VISTA:", result);
             return res.status(500).json({
                 name: result.error?.name,
                 error: result.error,
