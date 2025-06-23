@@ -1,6 +1,5 @@
 import  connection  from "../config/database.js";
 import { buildDynamicUpdateQuery } from "../helper/dinamicQuery.helper.js";
-//all querys for client, example; create client, edit client, delet client. login client(?)
 
 class Client{
     static async createClientAccount({nameClient, lastNameClient, addressMailClient, passwordClientHashed, numberPhoneClient, imgUrl, imgName}){

@@ -58,7 +58,7 @@ export const editClientAccountController = async(req) =>{
         success: false,
         error: {
           name:'ZodError',
-          issues: validationClientAccount.error.issues
+          issues: validateEditClient.error.issues
         }
       }
     }
@@ -71,6 +71,7 @@ export const editClientAccountController = async(req) =>{
        passwordClient =  await hashPassword(passwordClient);
     }
     const clientToEdit ={...rest, passwordClient}  
+
     const clientAccountUpdate = await Client.editClientAccount(clientToEdit, clientID);
     return{
       success: true,
