@@ -1,5 +1,4 @@
 import Client from "../models/client.model.js";
-import bcrypt from 'bcrypt';
 import { hashPassword } from "../utils/passwordHash.js";
 import { validateCreateAccount, validateEditAccount } from "../validations/client.validations.js";
 

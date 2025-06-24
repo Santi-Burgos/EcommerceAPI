@@ -1,6 +1,6 @@
-import { success } from 'zod/v4'
 import StreetAddress from '../models/address.model.js'
 import { validateAddressClient } from '../validations/addressClient.validations.js'
+import { verifyDuplicateStreet } from '../helper/duplicateStreet.helper.js'
 
 export const createAddressClientController = async(req) =>{
     try{
@@ -16,21 +16,31 @@ export const createAddressClientController = async(req) =>{
                 }
             }
         }
-
         const clientID = req.user.idUser; 
-
         const addressToCreate = validationAddress.data;
+
+        const addressIsValid = await verifyDuplicateStreet(clientID, addressToCreate)
+
+        if (!addressIsValid.success) {
+            return {
+                success: false,
+                error: {
+                name: 'DuplicateAddress',
+                message: addressIsValid.message
+                }
+            };
+        }
+
         addressToCreate.clientID = clientID;
 
         const addressCreate = await StreetAddress.createStreetAddress(addressToCreate);
 
-        if (!addressCreate.success) {
+        if(!addressCreate.success) {
             return {
                 success: false,
                 error: addressCreate.error
             };
         }
-
         return{
             success: true,
             data: addressCreate.data[0]
@@ -45,4 +55,8 @@ export const createAddressClientController = async(req) =>{
             }
         }
     }
+}
+
+export const editAddressStreetController = async(req) =>{
+    
 }

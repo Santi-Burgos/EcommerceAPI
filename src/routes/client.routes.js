@@ -7,26 +7,26 @@ import { loginClientView } from "../views/login.view.js";
 import { createAddressClientController } from "../controllers/addressClient.controller.js";
 import { createStreetAddressView } from '../views/addressStreet.view.js';
 
-const router = express.Router();
+const clientRoutes = express.Router();
 
 
-router.post('/create-client', async(req, res, next)=>{
+clientRoutes.post('/create-client', async(req, res, next)=>{
     const result = await createClientAccountController(req)
     createAccountClientView(result, res)
 })
-router.post('/login-client', async(req, res, next)=>{
+clientRoutes.post('/login-client', async(req, res, next)=>{
     const result = await clientLogin(req)
     loginClientView(result, res)
 })
-router.post('/edit-client', authToken, async (req, res, next)=>{
+clientRoutes.post('/edit-client', authToken, async (req, res, next)=>{
     const result = await editClientAccountController(req)
     editAccountClientView(result, res)
 })
 
-router.post('/create-address-street', authToken, async(req, res, next)=>{
+clientRoutes.post('/create-address-street', authToken, async(req, res, next)=>{
     const result = await createAddressClientController(req)
     createStreetAddressView(result, res)   
 })
 
 
-export default router
+export default clientRoutes
