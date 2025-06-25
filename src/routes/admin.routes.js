@@ -12,7 +12,7 @@ adminRoutes.post('/create-admin', async(req, res, next)=>{
     createAdminUserView(result, res)   
 })
 
-adminRoutes.post('/login-admin', authToken, async(req, res, next)=>{
+adminRoutes.post('/login-admin', async(req, res, next)=>{
     const result = await adminLogin(req)
     loginAdminView(result, res)
 })

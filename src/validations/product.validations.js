@@ -1,7 +1,7 @@
 import {z} from 'zod';
 
 const productSchema = z.object({
-    sku: z.string({
+    Sku: z.string({
         required_error: 'SKU is required'
     }),
     productName: z.string({

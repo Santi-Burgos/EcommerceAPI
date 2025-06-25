@@ -7,15 +7,16 @@ dotenv.config();
 
 const app = express();
 
+app.use('/api', router)
 
 app.use(
     express.json(),
-    cookieParser()
+    cookieParser(),
+    express.urlencoded({ extended: true })
     );
 
 const server = http.createServer(app)
 
-app.use('/api', router)
 
 server.listen(process.env.PORT, ()=>{
     console.log(process.env.PORT)

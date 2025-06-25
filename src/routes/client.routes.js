@@ -1,4 +1,5 @@
 import express from 'express';
+import {upload} from '../middlewares/upload.middleware.js'
 import { authToken } from "../middlewares/auth.middleware.js";
 import { clientLogin } from "../controllers/auth.controller.js";
 import { createClientAccountController, editClientAccountController } from "../controllers/client.controller.js";

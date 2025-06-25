@@ -3,40 +3,39 @@ import path from 'path';
 import fs from 'fs';
 
 const storage  = multer.diskStorage({
-    destination: (req, file, cb)=>{
-
-        let uploadDir = "uploads/"
+    destination: (req, file, cb) => {
+        let uploadDir = path.join(process.cwd(), 'uploads');
 
         if (req.isMultiple) {
-            uploadDir += "products/";
+            uploadDir = path.join(uploadDir, 'products');
         } else {
-            uploadDir += "profile/";
+            uploadDir = path.join(uploadDir, 'profile');
         }
-    
-        if(!fs.existsSync(uploadDir)){
-            fs.mkdirSync(uploadDir);
+
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
         }
         cb(null, uploadDir);
     },
-    filename: (req, file, cb) =>{
+    filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
     },
 });
 
-const fileFilter = (req, file, cb) =>{
-    const fileType = /jpg|jgpe|png|jfif/;
-    const extName = fileType.test(path.extname(file.originalname).toLocaleLowerCase());
-    const mimeType = fileType.test(file.mimeType);
+const fileFilter = (req, file, cb) => {
+  const fileType = /jpg|jpeg|png|jfif/;
+  const extName = fileType.test(path.extname(file.originalname).toLowerCase());
+  const mimeType = fileType.test(file.mimetype);
 
-    if(extName && mimeType){
-        return cb(null, true);
-    } else {
-        return cb(new Error)
-    }
+  if (extName && mimeType) {
+    cb(null, true); 
+  } else {
+    cb(new Error('Solo se permiten archivos jpg, jpeg, png o jfif'), false); 
+  }
 };
 
 export const upload = multer({
     storage,
-    limits: {fileSize: 5000000},
+    limits: { fileSize: 5 * 1024 * 1024 }, 
     fileFilter,
-})
+});

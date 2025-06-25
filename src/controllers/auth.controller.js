@@ -53,8 +53,10 @@ export const adminLogin = async(req) =>{
                 error: {name: 'Admin not found' }
             }
         }
+    
 
         const isMatch = await bcrypt.compare(passwordAdmin, loginAdmin.data.passwordAdmin)
+        
         
         if(!isMatch){
             return{

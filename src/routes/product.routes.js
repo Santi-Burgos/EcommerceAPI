@@ -5,9 +5,11 @@ import { upload } from '../middlewares/upload.middleware.js';
 
 const productRoutes = express.Router();
 
+
+
 productRoutes.post(
     '/create-product', 
-    async(req, res, next =>{
+    async(req, res, next) =>{
         req.isMultiple = true,
         next()
     },
@@ -16,6 +18,7 @@ productRoutes.post(
         const result = await createProductController(req)
         createProductView(result, res)
     }
-))
+)
+
 
 export default productRoutes
