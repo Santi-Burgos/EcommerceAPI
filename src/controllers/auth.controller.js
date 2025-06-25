@@ -1,6 +1,7 @@
-import Search from "../utils/search.js";
 import bcrypt from 'bcrypt';
 import { tokenGenerate } from "../utils/tokenGenerate.js";
+import SearchAdmin from '../utils/searchForAdmin.js';
+import { success } from 'zod/v4';
 
 export const clientLogin = async(req) =>{
     try{
@@ -30,6 +31,47 @@ export const clientLogin = async(req) =>{
             })
     }catch(err){
         return{
+            success: false,
+            error: {
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
+}
+
+
+export const adminLogin = async(req) =>{
+    try{
+        const {adminAddressMail, passwordAdmin} = req.body;
+        const loginAdmin = await SearchAdmin.byEmail(adminAddressMail);
+
+        if(!loginAdmin){
+            return{
+                success: false,
+                error: {name: 'Admin not found' }
+            }
+        }
+
+        const isMatch = await bcrypt.compare(passwordAdmin, loginAdmin.data.passwordAdmin)
+        
+        if(!isMatch){
+            return{
+                success: false,
+                error:{name: 'Password invalid'}
+            }
+        }
+        const idAdmin = loginAdmin.data.idAdmin
+        const idRol = loginAdmin.data.idRol
+        const tokenLoginAdmin = await tokenGenerate(idAdmin, adminAddressMail, idRol)
+        
+        return({
+            success: true,
+            token: tokenLoginAdmin
+        })
+    }catch(err){
+         return{
             success: false,
             error: {
                 name: err.name || 'InternalError',

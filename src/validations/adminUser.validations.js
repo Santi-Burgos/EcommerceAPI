@@ -25,3 +25,9 @@ export const validateAdminAccount = (data) =>{
         return{error: err.error}
     }
 }
+
+const editAdminUserSchema = adminUserSchema.partial();
+
+export const validateEditAdmin = (data) =>{
+    return editAdminUserSchema.safeParse(data)
+}
