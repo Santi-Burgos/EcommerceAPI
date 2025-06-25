@@ -10,14 +10,24 @@ import { createStreetAddressView } from '../views/addressStreet.view.js';
 const clientRoutes = express.Router();
 
 
-clientRoutes.post('/create-client', async(req, res, next)=>{
-    const result = await createClientAccountController(req)
-    createAccountClientView(result, res)
-})
+clientRoutes.post(
+  '/create-client',
+  (req, res, next) => {
+    req.isMultiple = false;
+    next();
+  },
+  upload.single('profile'),
+  async (req, res) => {
+    const result = await createClientAccountController(req);
+    createAccountClientView(result, res);
+  }
+);
+
 clientRoutes.post('/login-client', async(req, res, next)=>{
     const result = await clientLogin(req)
     loginClientView(result, res)
 })
+
 clientRoutes.post('/edit-client', authToken, async (req, res, next)=>{
     const result = await editClientAccountController(req)
     editAccountClientView(result, res)
