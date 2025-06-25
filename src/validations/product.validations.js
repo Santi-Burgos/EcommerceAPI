@@ -11,23 +11,23 @@ const productSchema = z.object({
     productDescription: z.string({
         required_error: 'product description is required'
     }),
-    productPrice: z.number({
+    productPrice: z.coerce.number({
         required_error: 'product price is required',
         invalid_type_error: 'product price must be a number' 
     }),
-    idStatusProduct: z.number({
+    idStatusProduct: z.coerce.number({
          required_error: 'idStatusProduct is required',
         invalid_type_error: 'idStatusProduct must be a number' 
     }),
-    idBrand: z.number({
+    idBrand: z.coerce.number({
          required_error: 'idBrand is required',
         invalid_type_error: 'idBrand must be a number' 
     }),
-    idCategory: z.number({
+    idCategory: z.coerce.number({
          required_error: 'idCategory is required',
         invalid_type_error: 'idCategory must be a number' 
     }),
-    quantity: z.number({
+    quantity: z.coerce.number({
         required_error: 'quantity is required',
         invalid_type_error: 'quantity must be a number' 
     })

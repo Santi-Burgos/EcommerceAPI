@@ -1,15 +1,18 @@
 import connection from "../config/database.js";
 
 class Product{
-    static async createProductModel({sku, productName, productDescription, productPrice, idStatusProduct, idBrand, idCategory, images, quantity}){
+    static async createProductModel({Sku, productName, productDescription, productPrice, idStatusProduct, idBrand, idCategory, images, quantity}){
         const conn = await connection.getConnection();
         try{
             await conn.beginTransaction();
 
-            const [resultProductInsert] = await conn.query('INSERT INTO `product`(`sku`, `productName`, `productDescription`, `productPrice`, `createAtProduct`, `idStatusProduct`, `idBrand`, `idCategory`) VALUES (?,?,?,?, NOW(),?,?,?)', [sku, productName, productDescription, productPrice, idStatusProduct, idBrand, idCategory] );
+            const [resultProductInsert] = await conn.query('INSERT INTO `product`(`sku`, `productName`, `productDescription`, `productPrice`, `createAtProduct`, `idStatusProduct`, `idBrand`, `idCategory`) VALUES (?,?,?,?, NOW(),?,?,?)', [Sku, productName, productDescription, productPrice, idStatusProduct, idBrand, idCategory] );
 
             const productID = resultProductInsert.insertId;
-        
+            
+            console.log(Array.isArray(images), images);
+
+
             const values = images.map(img => [img.urlImgProduct, img.nameImgProduct, productID]);
             const sql = 'INSERT INTO imageproduct(urlImgProduct, nameImgProduct, idProduct) VALUES ?';
             await conn.query(sql, [values]);

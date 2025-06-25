@@ -8,7 +8,6 @@ export const createProductController = async(req)=>{
         const images = await mapUploadedImages(req.files);
         const validationProduct = validateProductData(req.body);
 
-        console.log(req.body)
 
         if(!validationProduct.success){
             return{
@@ -20,8 +19,12 @@ export const createProductController = async(req)=>{
             }
         }
 
+        const productData = {
+        ...validationProduct.data,
+            images,
+        };
 
-        const createProduct = await Product.createProduct(validationProduct.data, images)
+        const createProduct = await Product.createProductModel(productData)
         return{
             success: true,
             data: createProduct
