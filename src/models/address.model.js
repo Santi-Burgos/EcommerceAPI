@@ -35,4 +35,4 @@ class StreetAddress {
     }
 }
 
-export default StreetAddresss
+export default StreetAddress

@@ -33,3 +33,15 @@ export const editAccountClientView = (result, res) =>{
     data: result.data
   })
 }
+
+export const changeProfilePicView = (result, res) =>{
+  if(!result.success){
+    return res.status(500).json({
+      message: "Error desconocido al cambiar foto de perfil",
+      details: result.error?.message || JSON.stringify(result.error)
+    })
+  }
+  return res.status(200).json({message: 'Profile image edit successfully',
+    data: result.data
+  })
+}

@@ -21,7 +21,7 @@ export const createClientAccountController = async (req) => {
 
     const passwordClientHashed =  await hashPassword(passwordClient);
     let imgName = req.file ? req.file.filename : null;
-    let imgUrl = req.file ? `http://localhost:3000/upload/${req.file.filename}` : `http://localhost:3000/upload/default-icon`;
+    let imgUrl = req.file ? `http://localhost:3000/upload/profile/${req.file.filename}` : `http://localhost:3000/upload/default-icon`;
 
     if(!imgName){
       imgName = 'defaulticon'

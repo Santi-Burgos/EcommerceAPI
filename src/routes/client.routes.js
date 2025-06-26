@@ -3,10 +3,11 @@ import {upload} from '../middlewares/upload.middleware.js'
 import { authToken } from "../middlewares/auth.middleware.js";
 import { clientLogin } from "../controllers/auth.controller.js";
 import { createClientAccountController, editClientAccountController } from "../controllers/client.controller.js";
-import { createAccountClientView, editAccountClientView } from "../views/client.view.js";
+import { createAccountClientView, editAccountClientView, changeProfilePicView } from "../views/client.view.js";
 import { loginClientView } from "../views/login.view.js";
 import { createAddressClientController, editAddressStreetController } from "../controllers/addressClient.controller.js";
 import { createStreetAddressView, editStreetAddressView } from '../views/addressStreet.view.js';
+import { editProfileImage } from '../controllers/imagesEdit.controller.js';
 
 const clientRoutes = express.Router();
 
@@ -43,6 +44,17 @@ clientRoutes.post('/edit-address-street', authToken, async(req, res, next)=>{
     const result = await editAddressStreetController(req)
     editStreetAddressView(result, res)
 })
+
+clientRoutes.post('/change-profile-pic', authToken, (req, res, next) => {
+    req.isMultiple = false;
+    next();
+  },
+  upload.single('profile'),
+  async (req, res) => {
+    const result = await editProfileImage(req);
+    changeProfilePicView(result, res);
+  }
+);
 
 
 export default clientRoutes

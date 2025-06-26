@@ -6,7 +6,7 @@ import SearchAdmin from '../utils/searchForAdmin.js';
 
 export const clientLogin = async(req) =>{
     try{
-        console.log(req.body)
+       
         const {addressMailClient, passwordClient} = req.body;
         const loginClient = await Search.byEmail(addressMailClient)
 
