@@ -17,11 +17,14 @@ class Images {
 
     static async editProductImage({images, idProduct, idImgProduct}){
         try{
-            const values = images.map(img=>[img.url, img.name, idProduct, idImgProduct])
+                const values = images.map((img, i) => [
+                    img.url,
+                    img.name,
+                    idProduct,
+                    Array.isArray(idImgProduct) ? idImgProduct[i] : idImgProduct
+                ]);
             console.log(values)
             const changeProductImg = ' UPDATE `imageproduct` SET `urlImgProduct`= ?,`nameImgProduct`=? WHERE idProduct = ? AND idImgProduct=?' 
-            
-            
 
              for (const val of values) {
                 await connection.query(changeProductImg, val);
