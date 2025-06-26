@@ -24,7 +24,7 @@ class StreetAddress {
     static async editAddressStreet(AddressToEdit, clientID){
         try{   
             const fullDataToUpdate = {...AddressToEdit, idClient: clientID} 
-            const {query, values} = buildDynamicUpdateQuery('addressclient', fullDataToUpdate, 'idClient')
+            const {query, values} = buildDynamicUpdateQuery('addressclient', fullDataToUpdate, 'idClient', { idAddressClient: AddressToEdit.idAddressClient })
             const result = await connection.query(query, values);
             return{
                 data:result
@@ -35,4 +35,4 @@ class StreetAddress {
     }
 }
 
-export default StreetAddress
+export default StreetAddresss

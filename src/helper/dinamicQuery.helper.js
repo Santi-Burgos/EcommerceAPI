@@ -1,4 +1,6 @@
-export function buildDynamicUpdateQuery(table, data, idField) {
+import { object } from "zod/v4";
+
+export function buildDynamicUpdateQuery(table, data, idField, extraConditions) {
 
 
   if (!data || typeof data !== 'object') {
@@ -21,9 +23,16 @@ export function buildDynamicUpdateQuery(table, data, idField) {
 
   const setClause = entries.map(([key]) => `${key} = ?`).join(', ');
   const values = entries.map(([_, value]) => value);
+
+  let whereClause = `\`${idField}\` = ?`;
   values.push(idValue);
 
-  const query = `UPDATE \`${table}\` SET ${setClause} WHERE \`${idField}\` = ?`;
+  for(const [key, val] of Object.entries(extraConditions)){
+    whereClause += ` AND \`${key}\` = ?`;
+  }
+
+
+  const query = `UPDATE \`${table}\` SET ${setClause} WHERE ${whereClause}`;
 
   return {
     query,
