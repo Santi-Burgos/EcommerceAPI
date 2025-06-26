@@ -9,11 +9,11 @@ class Product{
             const [resultProductInsert] = await conn.query('INSERT INTO `product`(`sku`, `productName`, `productDescription`, `productPrice`, `createAtProduct`, `idStatusProduct`, `idBrand`, `idCategory`) VALUES (?,?,?,?, NOW(),?,?,?)', [Sku, productName, productDescription, productPrice, idStatusProduct, idBrand, idCategory] );
 
             const productID = resultProductInsert.insertId;
-            
-            console.log(Array.isArray(images), images);
+        
+
+            const values = images.map(img => [img.url, img.name, productID]);
 
 
-            const values = images.map(img => [img.urlImgProduct, img.nameImgProduct, productID]);
             const sql = 'INSERT INTO imageproduct(urlImgProduct, nameImgProduct, idProduct) VALUES ?';
             await conn.query(sql, [values]);
 

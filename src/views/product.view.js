@@ -16,3 +16,15 @@ export const createProductView = (result, res) =>{
         data: result.data
     })
 };
+
+export const changeProductImageView = (result, res) =>{
+  if(!result.success){
+    return res.status(500).json({
+      message: "Error desconocido al cambiar foto de perfil",
+      details: result.error?.message || JSON.stringify(result.error)
+    })
+  }
+  return res.status(200).json({message: 'Product image edit successfully',
+    data: result.data
+  })
+}
