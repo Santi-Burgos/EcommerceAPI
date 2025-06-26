@@ -8,14 +8,14 @@ const addressSchema = z.object({
     crossStreet: z.string({
         invalid_type: 'Cross street must be a string',
     }),
-    addressNumber: z.number({
+    addressNumber: z.coerce.number({
         required_error: 'Street number is required',
         invalid_type: 'Street number must be a number'
     }),
     floorDepto: z.string().max(5,{
         message : 'Floor must be at most 5 characters long'
     }),
-    idPostalCode: z.number({
+    idPostalCode: z.coerce.number({
         required_error: 'Code Postal is required',
         invalid_type: 'Street number must be a number'
     })
@@ -28,5 +28,11 @@ export const validateAddressClient = (data) =>{
     }catch(err){
         return{ error: err.error}
     }
+}
+
+const editAddressSchema = addressSchema.partial();
+
+export const validateEditAddress = (data) =>{
+    return editAddressSchema.safeParse(data)
 }
 

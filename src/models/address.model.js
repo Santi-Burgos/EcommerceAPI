@@ -1,4 +1,5 @@
 import connection from '../config/database.js';
+import { buildDynamicUpdateQuery } from '../helper/dinamicQuery.helper.js';
 
 class StreetAddress {
 
@@ -17,6 +18,19 @@ class StreetAddress {
                 success: false, 
                 error
             }
+        }
+    }
+
+    static async editAddressStreet(AddressToEdit, clientID){
+        try{   
+            const fullDataToUpdate = {...AddressToEdit, idClient: clientID} 
+            const {query, values} = buildDynamicUpdateQuery('addressclient', fullDataToUpdate, 'idClient')
+            const result = await connection.query(query, values);
+            return{
+                data:result
+            }
+        }catch(error){
+            throw new Error('Error al editar address' + error.message)
         }
     }
 }

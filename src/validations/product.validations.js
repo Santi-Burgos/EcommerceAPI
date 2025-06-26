@@ -41,3 +41,8 @@ export const validateProductData = (data) =>{
         return{ error: err.error}
     }
 }
+
+const editProductSchema = productSchema.partial();
+export const validateEditProduct = (data) =>{
+    return editProductSchema.safeParse(data)
+}

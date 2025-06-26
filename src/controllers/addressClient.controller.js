@@ -1,6 +1,7 @@
 import StreetAddress from '../models/address.model.js'
-import { validateAddressClient } from '../validations/addressClient.validations.js'
+import { validateAddressClient, validateEditAddress } from '../validations/addressClient.validations.js'
 import { verifyDuplicateStreet } from '../helper/duplicateStreet.helper.js'
+
 
 export const createAddressClientController = async(req) =>{
     try{
@@ -51,12 +52,41 @@ export const createAddressClientController = async(req) =>{
             error:{
                 name: err.name || 'InternalError', 
                 message: err.message || 'Unexpected error',
-                 stack: err.stack
+                stack: err.stack
             }
         }
     }
 }
 
 export const editAddressStreetController = async(req) =>{
-    
-}
+    try{
+        const validationEditAddress = validateEditAddress(req.body);
+        if(!validationEditAddress.success){
+            return{
+                success: false,
+                error: {
+                    name: 'ZodError',
+                    issues: validationEditAddress.error.issues
+                }
+            }
+        }
+        const clientID = req.user.idUser;
+
+        const addressToEdit = validationEditAddress.data
+        
+        const AddressEdit = await StreetAddress.editAddressStreet(addressToEdit, clientID);
+        return{
+            success: true,
+            data: AddressEdit
+        }
+    }catch(err){
+        return{
+            sucecss: false,
+            error: {
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
+};

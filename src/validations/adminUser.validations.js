@@ -12,7 +12,7 @@ const adminUserSchema = z.object({
     passwordAdmin: z.string().min(8, {
         message: 'Password must be at least 5 characters long'
     }),
-    idRol: z.number({
+    idRol: z.coerce.number({
         invalid_type_error: 'idRol must be a number'
     })
 })

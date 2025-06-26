@@ -4,7 +4,7 @@ import fs from 'fs';
 
 const storage  = multer.diskStorage({
     destination: (req, file, cb) => {
-        let uploadDir = path.join(process.cwd(), 'uploads');
+        let uploadDir = path.join(process.cwd(), 'src','uploads');
 
         if (req.isMultiple) {
             uploadDir = path.join(uploadDir, 'products');

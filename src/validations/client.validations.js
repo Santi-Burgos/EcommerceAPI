@@ -16,7 +16,7 @@ const clientSchema = z.object({
         passwordClient: z.string().min(5, {
             message: 'Password must be at least 5 characters long',
         }),
-        numberPhoneClient: z.number({
+        numberPhoneClient: z.coerce.number({
             invalid_type_error: 'Number phone must be a number'
         })
 })

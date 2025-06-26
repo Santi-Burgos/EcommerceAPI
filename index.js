@@ -7,13 +7,13 @@ dotenv.config();
 
 const app = express();
 
-app.use('/api', router)
 
 app.use(
     express.json(),
     cookieParser(),
     express.urlencoded({ extended: true })
-    );
+);
+app.use('/api', router)
 
 const server = http.createServer(app)
 
