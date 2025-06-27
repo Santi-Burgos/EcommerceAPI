@@ -40,3 +40,25 @@ export const createProductController = async(req)=>{
         }
     }
 }
+
+
+export const deleteProductController = async (req) =>{
+    try{
+
+        const productID = req.params.id;
+        const deleteProduct = await Product.deleteProductModel(productID);
+        return{
+            success: true,
+            data: deleteProduct
+        }
+    }catch(err){
+        return{
+            sucess: false,
+            error:{
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
+}

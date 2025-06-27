@@ -36,6 +36,28 @@ class Product{
         }
 
     }
+
+
+    static async deleteProductModel(productID){
+        try{
+            console.log(productID)
+            const queryForDelete = 'DELETE FROM `product` WHERE idProduct = ?';
+            const resultQueryDelete = await connection.query(queryForDelete, productID);
+            
+            return{
+                data: resultQueryDelete
+            }
+
+        }catch(error){
+            console.error(error)
+            throw new Error('Error al eliminar producto' + error.message)
+        }
+    }
+
 }
+
+
+
+
 
 export default Product

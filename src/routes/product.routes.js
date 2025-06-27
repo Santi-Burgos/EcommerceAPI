@@ -1,7 +1,7 @@
 import express from 'express'
-import { createProductController } from "../controllers/product.controller.js";
+import { createProductController, deleteProductController } from "../controllers/product.controller.js";
 import {editProductImgController} from '../controllers/imagesEdit.controller.js'
-import { createProductView, changeProductImageView } from '../views/product.view.js';
+import { createProductView, changeProductImageView, deleteProductView } from '../views/product.view.js';
 import { upload } from '../middlewares/upload.middleware.js';
 
 const productRoutes = express.Router();
@@ -21,8 +21,8 @@ productRoutes.post(
     }
 )
 
-productRoutes.post(
-    '/edit-product',
+productRoutes.put(
+    '/edit-img-product',
     async(req, res, next)=>{
         req.isMultiple = true
         next();
@@ -33,6 +33,11 @@ productRoutes.post(
         changeProductImageView(result, res)
     }
 )
+
+productRoutes.delete('/:id', async(req, res, next)=>{
+    const result = await deleteProductController(req)
+    deleteProductView(result, res)
+})
 
 
 export default productRoutes
