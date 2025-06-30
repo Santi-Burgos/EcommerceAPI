@@ -1,7 +1,4 @@
-import { object } from "zod/v4";
-
 export function buildDynamicUpdateQuery(table, data, idField, extraConditions) {
-
 
   if (!data || typeof data !== 'object') {
     throw new Error('Invalid data object');

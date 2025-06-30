@@ -1,3 +1,4 @@
+import { deleteImageSelect } from "../helper/deleteImagesDeleted.helper.js";
 import Client from "../models/client.model.js";
 import { hashPassword } from "../utils/passwordHash.js";
 import { validateCreateAccount, validateEditAccount } from "../validations/client.validations.js";
@@ -21,13 +22,13 @@ export const createClientAccountController = async (req) => {
 
     const passwordClientHashed =  await hashPassword(passwordClient);
     let imgName = req.file ? req.file.filename : null;
-    let imgUrl = req.file ? `http://localhost:3000/upload/profile/${req.file.filename}` : `http://localhost:3000/upload/default-icon`;
+    let imgUrl = req.file ? `http://localhost:3000/uploads/profile/${req.file.filename}` : `http://localhost:3000/uploads/default-icon`;
 
     if(!imgName){
       imgName = 'defaulticon'
     }
     if(!imgUrl){
-      imgUrl = `http://localhost:3000/upload/default-icon`
+      imgUrl = `http://localhost:3000/uploads/profile/default-icon`
     }
     
     const clientToCreate = { ...rest, passwordClientHashed, imgUrl, imgName};
@@ -87,3 +88,29 @@ export const editClientAccountController = async(req) =>{
     }
   }
 };
+
+export const deleteClientAccountController = async(req) =>{
+  try{
+    const clientID = req.params.idClient
+    const deleteProfileImage = await deleteImageSelect('imageClient', 'imgUrl', clientID, 'idClient');
+
+    if(deleteProfileImage.success){
+      console.log('Profile image eliminada correctamente')
+    }
+    const deleteAccount = await Client.deleteAccountClient(clientID);
+    return{
+      success: true,
+      data: deleteAccount
+    }
+
+  }catch(err){
+      return{
+        success: false,
+        error: {
+          name: err.name || 'InternalError',
+          message: err.message || 'Unexpected error',
+          stack: err.stack
+        }
+      }
+  }
+}

@@ -45,3 +45,16 @@ export const changeProfilePicView = (result, res) =>{
     data: result.data
   })
 }
+
+export const deleteAccountClientView = (result, res)=>{
+  if(!result.success){
+    return res.status(500).json({
+      message: 'Error al eliminar la cuenta cliente',
+      details: result.error?.message || JSON.stringify(result.error)
+    })
+  }
+
+  return res.status(200).json({ message: 'Cuenta eliminada con exito',
+    data: result.data
+  })
+}

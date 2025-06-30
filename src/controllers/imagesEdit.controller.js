@@ -3,7 +3,7 @@ import Images from "../models/images.models.js";
 
 
 
-export const editProfileImage = async(req) =>{
+export const editProfileImageController = async(req) =>{
 
    try{ 
         const clientID = req.user.idUser
@@ -35,7 +35,6 @@ export const editProductImgController = async(req) =>{
         const images = await mapUploadedImages(req.files); 
         
         const allToUpdate = {images, idProduct, idImgProduct}
-        console.log(allToUpdate)
 
         const editImagesProduct = await Images.editProductImage(allToUpdate)
         return{

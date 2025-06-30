@@ -1,9 +1,12 @@
 import connection from "../config/database.js";
 
 class Images {
-    static async editProfileImage(imgUrl, imgName, clientID){
+    static async editProfileImage(imgName, imgUrl, clientID){
         try{
             const changeProfileimg = 'UPDATE `imageclient` SET `imgUrl`=?,`imgName`=? WHERE idClient = ?'
+
+            console.log(imgUrl, imgName)
+
             const queryChangeProfileImg = await connection.query(changeProfileimg, [imgUrl, imgName, clientID])
             return{
                 success: true,
@@ -21,10 +24,12 @@ class Images {
                     img.url,
                     img.name,
                     idProduct,
-                    Array.isArray(idImgProduct) ? idImgProduct[i] : idImgProduct
+                    Array.isArray(idImgProduct) ? idImgProduct[i] : idImgProduct,
+                
                 ]);
-            console.log(values)
-            const changeProductImg = ' UPDATE `imageproduct` SET `urlImgProduct`= ?,`nameImgProduct`=? WHERE idProduct = ? AND idImgProduct=?' 
+
+                
+            const changeProductImg = 'UPDATE `imageproduct` SET `urlImgProduct`= ?,`nameImgProduct`=? WHERE idProduct = ? AND idImgProduct=?' 
 
              for (const val of values) {
                 await connection.query(changeProductImg, val);

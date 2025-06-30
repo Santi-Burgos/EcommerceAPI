@@ -47,10 +47,10 @@ class Client{
         }
     }
 
-    static async deleteAccountClient({clientID}){
+    static async deleteAccountClient(clientID){
         try{
-            const deleteAccount = 'DELETE FROM client WHERE  idClient = ?';
-            const queryDeleteAccount = await connection.query(deleteAccount, [clientID]);
+            const deleteAccount = 'DELETE FROM client WHERE idClient = ?';
+            const queryDeleteAccount = await connection.query(deleteAccount, clientID);
             return{
                 success: true, 
                 data: queryDeleteAccount

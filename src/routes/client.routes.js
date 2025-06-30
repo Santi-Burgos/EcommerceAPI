@@ -2,12 +2,12 @@ import express from 'express';
 import {upload} from '../middlewares/upload.middleware.js'
 import { authToken } from "../middlewares/auth.middleware.js";
 import { clientLogin } from "../controllers/auth.controller.js";
-import { createClientAccountController, editClientAccountController } from "../controllers/client.controller.js";
-import { createAccountClientView, editAccountClientView, changeProfilePicView } from "../views/client.view.js";
+import { createClientAccountController, deleteClientAccountController, editClientAccountController } from "../controllers/client.controller.js";
+import { createAccountClientView, editAccountClientView, changeProfilePicView, deleteAccountClientView } from "../views/client.view.js";
 import { loginClientView } from "../views/login.view.js";
 import { createAddressClientController, editAddressStreetController } from "../controllers/addressClient.controller.js";
 import { createStreetAddressView, editStreetAddressView } from '../views/addressStreet.view.js';
-import { editProfileImage } from '../controllers/imagesEdit.controller.js';
+import { editProfileImageController } from '../controllers/imagesEdit.controller.js';
 
 const clientRoutes = express.Router();
 
@@ -35,6 +35,22 @@ clientRoutes.post('/edit-client', authToken, async (req, res, next)=>{
     editAccountClientView(result, res)
 })
 
+clientRoutes.post('/change-profile-pic', authToken, (req, res, next) => {
+    req.isMultiple = false;
+    next();
+  },
+  upload.single('profile'),
+  async (req, res) => {
+    const result = await editProfileImageController(req);
+    changeProfilePicView(result, res);
+  }
+);
+
+clientRoutes.delete('/:idClient', authToken, async(req, res, next) =>{
+  const result = await deleteClientAccountController(req)
+  deleteAccountClientView(result, res)
+})
+
 clientRoutes.post('/create-address-street', authToken, async(req, res, next)=>{
     const result = await createAddressClientController(req)
     createStreetAddressView(result, res)   
@@ -45,16 +61,7 @@ clientRoutes.post('/edit-address-street', authToken, async(req, res, next)=>{
     editStreetAddressView(result, res)
 })
 
-clientRoutes.post('/change-profile-pic', authToken, (req, res, next) => {
-    req.isMultiple = false;
-    next();
-  },
-  upload.single('profile'),
-  async (req, res) => {
-    const result = await editProfileImage(req);
-    changeProfilePicView(result, res);
-  }
-);
+clientRoutes.delete('/address/:idStreet', authToken)
 
 
 export default clientRoutes

@@ -21,4 +21,7 @@ adminRoutes.post('/edit-admin', authToken, async(req, res, next)=>{
     const result = await editAdminUserController(req)
     editAdminUserView(result, res)
 })
+
+adminRoutes.delete('/delete-admin', authToken, async(req, res, next)=>{
+})
 export default adminRoutes

@@ -40,7 +40,6 @@ class Product{
 
     static async deleteProductModel(productID){
         try{
-            console.log(productID)
             const queryForDelete = 'DELETE FROM `product` WHERE idProduct = ?';
             const resultQueryDelete = await connection.query(queryForDelete, productID);
             
@@ -55,9 +54,6 @@ class Product{
     }
 
 }
-
-
-
 
 
 export default Product

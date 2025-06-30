@@ -1,3 +1,4 @@
+import { deleteImageSelect } from '../helper/deleteImagesDeleted.helper.js';
 import { mapUploadedImages } from '../helper/imageArray.helper.js';
 import Product from '../models/product.model.js';
 import { validateProductData } from '../validations/product.validations.js';
@@ -41,11 +42,17 @@ export const createProductController = async(req)=>{
     }
 }
 
-
 export const deleteProductController = async (req) =>{
     try{
 
         const productID = req.params.id;
+
+        const deleteImg = await deleteImageSelect('imageProduct', 'urlImgProduct', productID, 'idProduct')
+
+        if(deleteImg.success){
+            console.message('Se han elimnado las imagenes con exito')    
+        }
+
         const deleteProduct = await Product.deleteProductModel(productID);
         return{
             success: true,
