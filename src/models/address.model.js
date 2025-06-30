@@ -14,10 +14,7 @@ class StreetAddress {
                 data: queryAddressStreet
             }
         }catch(error){ 
-            return{
-                success: false, 
-                error
-            }
+            throw new Error('Error al crear address street' + error.message)
         }
     }
 
@@ -26,11 +23,27 @@ class StreetAddress {
             const fullDataToUpdate = {...AddressToEdit, idClient: clientID} 
             const {query, values} = buildDynamicUpdateQuery('addressclient', fullDataToUpdate, 'idClient', { idAddressClient: AddressToEdit.idAddressClient })
             const result = await connection.query(query, values);
+
             return{
                 data:result
             }
         }catch(error){
             throw new Error('Error al editar address' + error.message)
+        }
+    }
+
+    static async deleteAddressStreet(idAddressStreet, clientID){
+        try{
+            const queryDeleteAddress = 'DELETE FROM DELETE FROM `addressclient` WHERE idAddressClient = ? AND idClient = ?'
+
+            const resultQuery = await connection.query(queryDeleteAddress, idAddressStreet, clientID);
+            
+            return{
+                success: true,
+                data:resultQuery
+            }
+        }catch(error){
+            throw new Error('Error al eliminar address street' + error.message);
         }
     }
 }

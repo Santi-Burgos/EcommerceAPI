@@ -50,7 +50,7 @@ export const deleteProductController = async (req) =>{
         const deleteImg = await deleteImageSelect('imageProduct', 'urlImgProduct', productID, 'idProduct')
 
         if(deleteImg.success){
-            console.message('Se han elimnado las imagenes con exito')    
+            console.log('Se han elimnado las imagenes con exito')    
         }
 
         const deleteProduct = await Product.deleteProductModel(productID);

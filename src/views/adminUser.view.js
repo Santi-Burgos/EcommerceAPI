@@ -34,3 +34,16 @@ export const editAdminUserView = (result, res) =>{
     data: result.data
   })
 }
+
+export const deleteAdminUserView = (result, res) =>{
+  if(!result.success){
+    return res.status(500).json({
+      message: "Error desconocido al eliminar administrador",
+      details: result.error?.message || JSON.stringify(result.error)
+    })
+  }
+  return res.status(200).json({
+    message: 'Admin account deleted succesfully',
+    data: result.data
+  })
+}

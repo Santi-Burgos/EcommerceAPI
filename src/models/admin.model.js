@@ -30,5 +30,19 @@ class Admin{
             throw new Error('Error al editar administrador' + error.message)
         }
     }
+
+    static async deleteAdminAccount(adminID){
+        try{
+            const queryToDelete = 'DELETE FROM `useradmin` WHERE idAdmin = ?'
+            const resultDelete = await connection.query(queryToDelete, adminID);
+            return{
+                success: true, 
+                data: resultDelete
+            }
+
+        }catch(error){
+            throw new Error ('Error al elimnar adminsitrador' + error.message)
+        }
+    }
 }
 export default Admin

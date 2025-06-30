@@ -6,7 +6,9 @@ import productRoutes from './product.routes.js';
 const router = express.Router();
 
 router.use('/client', clientRoutes);
+
+
 router.use('/admin', adminRoutes);
-router.use('/product', productRoutes)
+router.use('/admin/product', productRoutes)
 
 export default router;

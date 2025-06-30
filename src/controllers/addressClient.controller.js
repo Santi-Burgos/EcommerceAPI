@@ -90,3 +90,25 @@ export const editAddressStreetController = async(req) =>{
         }
     }
 };
+
+export const deleteAddressStreetController = async(req) =>{
+    try{
+        const idAddressStreet = req.params.idStreet
+        const clientID = req.user.idUser
+
+        const deleteStreetAddress = await StreetAddress.deleteAddressStreet(idAddressStreet, clientID)
+
+        return{
+            data: deleteStreetAddress
+        }
+    }catch{
+        return{
+            sucecss: false,
+            error: {
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
+}

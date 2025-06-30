@@ -41,5 +41,16 @@ export const editStreetAddressView =(result , res) =>{
         message: 'Street address edit succesfully',
         data: result.data
     })
+}
 
+export const deleteAddressStreetView = (result, res) =>{
+    if(!result.success){
+        return res.status(500).json({
+            name:result.error?.name,
+            error: result.error,
+            message: result.error?.message || 'Error desconocido al eliminar direccion',
+            issues: result.error?.issues,
+            stack: result.error?.stack
+        });
+    }
 }

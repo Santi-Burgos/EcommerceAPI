@@ -51,7 +51,6 @@ export const editAdminUserController = async(req) =>{
             }
         }
         const adminID = req.user.idUser
-
         
         let{passwordAdmin, ...rest} = validationEditAdmin.data
 
@@ -64,6 +63,26 @@ export const editAdminUserController = async(req) =>{
         return{
             success: true,
             data: adminUserUpdate
+        }
+    }catch(err){
+        return{
+            success: false,
+            error: {
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
+}
+
+export const deleteAdminUserController = async(req) =>{
+    try{
+        const adminID = req.params.idAdmin;
+        
+        const deleteAdminUser = await Admin.deleteAdminAccount(adminID);
+        return{
+            data: deleteAdminUser
         }
     }catch(err){
         return{

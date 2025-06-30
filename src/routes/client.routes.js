@@ -5,8 +5,8 @@ import { clientLogin } from "../controllers/auth.controller.js";
 import { createClientAccountController, deleteClientAccountController, editClientAccountController } from "../controllers/client.controller.js";
 import { createAccountClientView, editAccountClientView, changeProfilePicView, deleteAccountClientView } from "../views/client.view.js";
 import { loginClientView } from "../views/login.view.js";
-import { createAddressClientController, editAddressStreetController } from "../controllers/addressClient.controller.js";
-import { createStreetAddressView, editStreetAddressView } from '../views/addressStreet.view.js';
+import { createAddressClientController, deleteAddressStreetController, editAddressStreetController } from "../controllers/addressClient.controller.js";
+import { createStreetAddressView, editStreetAddressView, deleteAddressStreetView } from '../views/addressStreet.view.js';
 import { editProfileImageController } from '../controllers/imagesEdit.controller.js';
 
 const clientRoutes = express.Router();
@@ -61,7 +61,10 @@ clientRoutes.post('/edit-address-street', authToken, async(req, res, next)=>{
     editStreetAddressView(result, res)
 })
 
-clientRoutes.delete('/address/:idStreet', authToken)
+clientRoutes.delete('/address/:idStreet', authToken, async(req, res, next)=>{
+  const result = await deleteAddressStreetController(req)
+  deleteAddressStreetView(result, res)
+})
 
 
 export default clientRoutes

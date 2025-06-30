@@ -1,7 +1,7 @@
 import express from "express";
 import { authToken } from "../middlewares/auth.middleware.js";
-import {createAdminUserController, editAdminUserController} from '../controllers/admin.controller.js'
-import { createAdminUserView, editAdminUserView } from "../views/adminUser.view.js";
+import {createAdminUserController, deleteAdminUserController, editAdminUserController} from '../controllers/admin.controller.js'
+import { createAdminUserView, deleteAdminUserView, editAdminUserView } from "../views/adminUser.view.js";
 import { adminLogin } from "../controllers/auth.controller.js";
 import { loginAdminView } from "../views/login.view.js";
 
@@ -23,5 +23,7 @@ adminRoutes.post('/edit-admin', authToken, async(req, res, next)=>{
 })
 
 adminRoutes.delete('/delete-admin', authToken, async(req, res, next)=>{
+    const result = deleteAdminUserController(req)
+    deleteAdminUserView(result, res)
 })
 export default adminRoutes
