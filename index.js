@@ -3,6 +3,7 @@ import http from 'http';
 import dotenv from 'dotenv';
 import router from './src/routes/router.js';
 import cookieParser from 'cookie-parser';
+
 dotenv.config();
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(
     cookieParser(),
     express.urlencoded({ extended: true })
 );
+
 app.use('/api', router)
 
 const server = http.createServer(app)

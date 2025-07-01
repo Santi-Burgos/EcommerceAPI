@@ -11,7 +11,7 @@ const productRoutes = express.Router();
 
 
 productRoutes.post(
-    '/create-product', 
+    '/create-product', authToken, 
     async(req, res, next) =>{
         req.isMultiple = true,
         next()
