@@ -13,10 +13,10 @@ export const insertProductCartController = async(req) =>{
     
 
 
-        const isProductValible = await productExist(productID)
-        if(!isProductValible){
+        const isProductAvailable = await productExist(productID)
+        if(!isProductAvailable){
             return{
-                data: isProductValible
+                data: isProductAvailable
             }
         }
         const theresStock = stockAvalible(quantityCart, productID);

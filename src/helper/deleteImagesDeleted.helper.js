@@ -6,7 +6,7 @@ import {config as configDotenv} from 'dotenv';
 
 configDotenv();
 
-export async function deleteImageSelect(table, valueSelect, data, idField, extraCondition= {}   ){
+export async function deleteImageSelect(table, valueSelect, data, idField, extraCondition = {}){
     try{
 
         const values = [];

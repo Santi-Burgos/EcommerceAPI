@@ -3,11 +3,15 @@ import clientRoutes from './client.routes.js';
 import adminRoutes from './admin.routes.js';
 import productRoutes from './product.routes.js';
 import cartRoutes from './cart.routes.js';
+import paymentRoutes from './payment.routes.js';
 
 const router = express.Router();
 
 router.use('/client', clientRoutes);
 router.use('/client/cart', cartRoutes)
+
+router.use('/payment', paymentRoutes)
+
 
 router.use('/admin', adminRoutes);
 router.use('/admin/product', productRoutes)
