@@ -1,6 +1,7 @@
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import TargetCart from "../models/payment.model.js";
 import { config as configDotenv } from 'dotenv';
+import fetch from "node-fetch";
 
 configDotenv();
 
@@ -34,7 +35,7 @@ export const paymentController = async (req, res) => {
         pending: "http://localhost:3000/api/payment/pending",
         success: "http://localhost:3000/api/payment/success",
       },
-      notification_url: "https://e1dd-168-90-74-100.ngrok-free.app/api/payment/webhook"
+      notification_url: "https://bad6-168-90-74-100.ngrok-free.app/api/payment/webhook"
       
     };
 
@@ -60,5 +61,25 @@ export const receiveWebhook = async(req, res) =>{
     console.log('URL:', req.originalUrl);
     console.log('Headers:', JSON.stringify(req.headers, null, 2));
     console.log('Body:', JSON.stringify(req.body, null, 2));
-    res.sendStatus(200);
+
+
+
+    const paymentId = req.body.data?.id
+    if(!paymentId) return res.sendStatus(400)
+
+      try{
+        const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`,{
+            headers:{
+              Authorization: `Bearer ${process.env.MERCADOPAGO_API_KEY}`
+            }
+        });
+        const payment = await response.json();
+        console.log('ACA ESTA PAYMENT',payment)
+        
+        res.sendStatus(200);
+      }catch(e) {
+        console.error(e);
+        res.sendStatus(500);
+      }
+
 }
