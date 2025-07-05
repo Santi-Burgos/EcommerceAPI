@@ -204,3 +204,36 @@
         idTicketRoom int not null,
         FOREIGN KEY (idTicketRoom) REFERENCES ticketRoom(idTicketRoom) ON DELETE CASCADE
     );
+        /* PAYMENT SECTION */
+    
+	CREATE TABLE IF NOT EXISTS payer(
+    idPayer int primary key not null,
+    payerEmail varchar(45),
+    payerFirstName varchar(45),
+    payerLastName varchar(45),	
+    payerIdentification int (15),
+    payerPhone int(25)
+    );
+    
+     
+	CREATE TABLE IF NOT EXISTS payment(
+		idPayment int primary key not null,
+        authorizationCode int(15), 
+        paymentStatus varchar(15),
+        paymentDetails varchar(15),
+        paymentDateApproved date,
+        paymentLastFourDigits int(4),
+        paymentOrderId int(15),
+        idPayer int not null, 
+        idOrderBuy int not null,
+        FOREIGN KEY (idPayer) REFERENCES payer(idPayer) ON DELETE CASCADE,
+        FOREIGN KEY (idOrderBuy) REFERENCES OrderBuy(idOrderBuy) ON DELETE CASCADE
+        );
+
+    CREATE TABLE IF NOT EXISTS orderBuyStatus(
+	idStatusOrder int primary key auto_increment not null,
+	statusOrder varchar(25) not null
+);
+
+ALTER TABLE orderBuy
+ADD COLUMN idStatusOrder int  not null FOREIGN KEY idStatusOrder REFERENCES orderBuyStatus(idStatusOrder) ON DELETE CASCADE;

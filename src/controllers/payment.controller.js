@@ -2,6 +2,7 @@ import { MercadoPagoConfig, Preference } from "mercadopago";
 import TargetCart from "../models/payment.model.js";
 import { config as configDotenv } from 'dotenv';
 import fetch from "node-fetch";
+import { stockAvalible } from "../helper/stockAvailable.helper.js";
 
 configDotenv();
 
@@ -10,7 +11,26 @@ configDotenv();
 
 export const paymentController = async (req, res) => {
     try {
+       //validacion de stock
+      const queryCart = await TargetCart.selectCartForPay(clientID);
 
+      const quantityCart = queryCart.quantityCart
+      const productID = queryCart.idProduct
+
+      const stock = await stockAvalible(quantityCart, productID)
+      if(!stock){
+          return stock
+      }
+
+      const createOrderDetails = await ();
+      
+
+
+       
+       //Reservar stock dentro de orderDetails y creacion de orderBuy 
+      
+
+      
         const client = new MercadoPagoConfig({
                 accessToken: process.env.MERCADOPAGO_API_KEY,
                 options: { timeout: 5000 }
@@ -18,7 +38,6 @@ export const paymentController = async (req, res) => {
         const payment = new Preference(client);
         console.log(process.env.MERCADOPAGO_API_KEY)
     const clientID = 12;
-    const queryCart = await TargetCart.selectCartForPay(clientID);
 
     const items = queryCart.map(item => ({
       title: item.productName,
