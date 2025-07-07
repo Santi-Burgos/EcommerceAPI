@@ -2,6 +2,7 @@ import { MercadoPagoConfig, Preference } from "mercadopago";
 import TargetCart from "../models/payment.model.js";
 import { config as configDotenv } from 'dotenv';
 import fetch from "node-fetch";
+import Stock from "../models/stock.model.js"
 import { stockAvalible } from "../helper/stockAvailable.helper.js";
 
 configDotenv();
@@ -11,33 +12,35 @@ configDotenv();
 
 export const paymentController = async (req, res) => {
     try {
-       //validacion de stock
+      
+    
+      const clientID = 12;
+      // const clientID = req.user.idUser
       const queryCart = await TargetCart.selectCartForPay(clientID);
 
-      const quantityCart = queryCart.quantityCart
-      const productID = queryCart.idProduct
+
+      const createOrder = await TargetCart.insertOrder(clientID, addressID); 
+      const orderID = createOrder.orderID
+
+      for(const product of queryCart){
+
+      const quantityCart = product.quantityCart
+      const productPrice = product.productPrice
+      const productID = product.idProduct
 
       const stock = await stockAvalible(quantityCart, productID)
       if(!stock){
-          return stock
+        return stock
       }
-
-      const createOrderDetails = await ();
-      
-
-
-       
-       //Reservar stock dentro de orderDetails y creacion de orderBuy 
-      
-
-      
+      await TargetCart.insertDetailsOrder(quantityCart, productPrice,orderID, productID)
+      await Stock.reservedStock(quantityCart, productID)
+    } 
         const client = new MercadoPagoConfig({
                 accessToken: process.env.MERCADOPAGO_API_KEY,
                 options: { timeout: 5000 }
              });
         const payment = new Preference(client);
         console.log(process.env.MERCADOPAGO_API_KEY)
-    const clientID = 12;
 
     const items = queryCart.map(item => ({
       title: item.productName,
@@ -74,15 +77,6 @@ export const paymentController = async (req, res) => {
 
 
 export const receiveWebhook = async(req, res) =>{
-    console.log(req.query);
-    console.log('--- NUEVO WEBHOOK ---');
-    console.log('Método:', req.method);
-    console.log('URL:', req.originalUrl);
-    console.log('Headers:', JSON.stringify(req.headers, null, 2));
-    console.log('Body:', JSON.stringify(req.body, null, 2));
-
-
-
     const paymentId = req.body.data?.id
     if(!paymentId) return res.sendStatus(400)
 
@@ -93,7 +87,9 @@ export const receiveWebhook = async(req, res) =>{
             }
         });
         const payment = await response.json();
-        console.log('ACA ESTA PAYMENT',payment)
+        console.log('ACA ESTA payer',payment.payer)
+
+
         
         res.sendStatus(200);
       }catch(e) {

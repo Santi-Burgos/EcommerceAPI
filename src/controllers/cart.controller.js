@@ -1,4 +1,3 @@
-import { success } from 'zod/v4';
 import { productExist } from '../helper/productExist.helper.js';
 import { stockAvalible } from '../helper/stockAvailable.helper.js';
 import Cart from '../models/cart.model.js';
@@ -6,12 +5,9 @@ import Cart from '../models/cart.model.js';
 
 export const insertProductCartController = async(req) =>{
     try{ 
-
         const clientID = req.user.idUser; 
         const quantityCart = req.body.quantityCart;
         const productID = req.params.id;
-    
-
 
         const isProductAvailable = await productExist(productID)
         if(!isProductAvailable){
