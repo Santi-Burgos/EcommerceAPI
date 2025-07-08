@@ -1,4 +1,3 @@
-import { success } from "zod/v4";
 import connection from "../config/database.js";
 
 class TargetCart{
@@ -72,7 +71,19 @@ class TargetCart{
         }
     }
 
-    
+    static async editStatusOrder(statusOrder, orderID){
+        try{
+            const editStatus = 'UPDATE `orderbuy` SET idStatusOrder = ? WHERE idOrder = ?'
+            const resultEditStatus = await connection.query(editStatus, [statusOrder, orderID])
+            
+            return{
+                success: true,
+                data: resultEditStatus
+            }
+        }catch(error){
+            throw new Error('Error al cambiar el estado de la orden' + error.message)
+        }
+    }
 
 }
 

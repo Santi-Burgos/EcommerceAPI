@@ -59,21 +59,25 @@ export const paymentController = async (req, res) => {
       notification_url: "https://bad6-168-90-74-100.ngrok-free.app/api/payment/webhook"
       
     };
-
-
-    console.log('Payload a enviar:', JSON.stringify( {preference} , null, 2));
-
     const resultPayment = await payment.create( {body: preference} );
 
     if(resultPayment){
         console.log(resultPayment);
     }
 
-  } catch (err) {
-    console.error('Error en paymentController:', err);
-  }
+  }catch(err){
+        return{
+            sucess: false,
+            error:{
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
 };
 
+// FALTA RECIBIR EL ORDER ID 
 
 export const receiveWebhook = async(req, res) =>{
     const paymentId = req.body.data?.id
@@ -93,11 +97,13 @@ export const receiveWebhook = async(req, res) =>{
           payerIdentification: payment.payer.identification.number,
           payerPhone: payment.payer.phone.number,
         }
+        
+        const paymentStatus = payment.satus 
 
         const objectPayment = {
           idPayment: payment.id,
           authorizationCode: payment.authorization_code,
-          paymentStatus: payment.satus ,
+          paymentStatus,
           paymentDetails: payment.status_details,
           paymentDateApproved: payment.date_approved, 
           paymentLastFourDigits: payment.card.last_four_digits,
@@ -109,14 +115,29 @@ export const receiveWebhook = async(req, res) =>{
         await TargetCart.insertPayer(objectPayer);
         const paymentResult = await TargetCart.insertPayment(objectPayment);
 
-        //cambiar status de order
+        let statusOrder;
+        if(paymentStatus === 'approved'){
+            statusOrder = 2;
+        }else{
+          statusOrder = 3
+        }
+
+        await TargetCart.editStatusOrder(statusOrder, orderID)
 
         return{
-          data: paymentResult
+          success: true,
+          data: paymentResult,
+          message: ('Insercion del payer, payment, y cambio de estado en order hechos correctamente')
         }
-      }catch(e) {
-        console.error(e);
-        res.sendStatus(500);
-      }
+      }catch(err){
+        return{
+            sucess: false,
+            error:{
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
 
 }
