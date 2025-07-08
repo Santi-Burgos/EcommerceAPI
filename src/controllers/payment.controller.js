@@ -18,7 +18,6 @@ export const paymentController = async (req, res) => {
       // const clientID = req.user.idUser
       const queryCart = await TargetCart.selectCartForPay(clientID);
 
-
       const createOrder = await TargetCart.insertOrder(clientID, addressID); 
       const orderID = createOrder.orderID
 
@@ -79,7 +78,6 @@ export const paymentController = async (req, res) => {
 export const receiveWebhook = async(req, res) =>{
     const paymentId = req.body.data?.id
     if(!paymentId) return res.sendStatus(400)
-
       try{
         const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`,{
             headers:{
@@ -87,11 +85,35 @@ export const receiveWebhook = async(req, res) =>{
             }
         });
         const payment = await response.json();
-        console.log('ACA ESTA payer',payment.payer)
-
-
         
-        res.sendStatus(200);
+        const objectPayer = {
+          idPayer: payment.payer.id,
+          payerFirstName: payment.payer.first_name,
+          payerLastName: payment.payer.last_name,
+          payerIdentification: payment.payer.identification.number,
+          payerPhone: payment.payer.phone.number,
+        }
+
+        const objectPayment = {
+          idPayment: payment.id,
+          authorizationCode: payment.authorization_code,
+          paymentStatus: payment.satus ,
+          paymentDetails: payment.status_details,
+          paymentDateApproved: payment.date_approved, 
+          paymentLastFourDigits: payment.card.last_four_digits,
+          paymentTransactionAmount: payment.transaction_details.installment_amount,
+          paymentNetReceivedAmount: payment.transaction_details.net_received_amount
+        }
+
+
+        await TargetCart.insertPayer(objectPayer);
+        const paymentResult = await TargetCart.insertPayment(objectPayment);
+
+        //cambiar status de order
+
+        return{
+          data: paymentResult
+        }
       }catch(e) {
         console.error(e);
         res.sendStatus(500);

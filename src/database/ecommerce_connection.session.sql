@@ -237,3 +237,8 @@
 
 ALTER TABLE orderBuy
 ADD COLUMN idStatusOrder int  not null FOREIGN KEY idStatusOrder REFERENCES orderBuyStatus(idStatusOrder) ON DELETE CASCADE;
+
+ALTER TABLE ecommerce_db.payment ADD paymentTransactionAmout INT NULL;
+ALTER TABLE ecommerce_db.payment ADD netReceivedAmount INT NULL;
+
+ALTER TABLE ecommerce_db.payment CHANGE netReceivedAmount paymentNetReceivedAmount int(11) DEFAULT NULL NULL;
