@@ -29,27 +29,18 @@ export const paymentController = async (req, res) => {
       const createOrder = await TargetCart.insertOrder(priceOrder, clientID, addressMailID); 
       const orderID = createOrder.orderID
 
-
-
       for(const product of queryCart){
 
       const quantityCart = product.quantityCart
       const productPrice = product.productPrice
       const productID = product.idProduct
 
-        console.log(quantityCart)
-        console.log(productPrice)
-        console.log(productID)
-
-
       const stock = await stockAvalible(quantityCart, productID)
       if(!stock){
         return stock
       }
       
-      
       const details = await TargetCart.insertDetailsOrder(quantityCart, productPrice, orderID, productID)
-      
       
       if(!details) {console.log('no se ha podido crear detalle');}
       else { console.log('detalle creado')}
@@ -60,8 +51,6 @@ export const paymentController = async (req, res) => {
       }else{
         console.log(haveStock.message)
       }
-
-
     } 
         const client = new MercadoPagoConfig({
                 accessToken: process.env.MERCADOPAGO_API_KEY,
