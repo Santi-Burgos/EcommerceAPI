@@ -11,14 +11,25 @@ class TargetCart{
             throw new Error('Error al seleccionar el carrito' + error.message )
         }
     }
+    static async totalPrice(clientID){
+        try{
+            const querySum = 'SELECT SUM(product.productPrice * cart.quantityCart) AS totalPrice FROM cart JOIN product ON cart.idProduct = product.idProduct WHERE cart.idClient = ?'
+            const [rows] = await connection.query(querySum, [clientID])
+            return rows[0]
 
-    static async insertOrder(clientID, addressMailID){
+        }catch(error){
+            throw new Error('Error al sumar el total del carro' + error.message)
+        }
+    }
+
+    static async insertOrder(priceOrder, clientID, addressMailID){
         try{
             const statusOrderID = 1;
-            const queryOrderBuy = 'INSERT INTO orderBuy(orderDate, totalPrice, idClient, idAddressClient, idStatusOrder) VALLUES (NOW(), ?, ? , ?, ?)'
-            const orderBuy = await connection.query( queryOrderBuy ,[clientID,  ,addressMailID, statusOrderID]);
-            const orderID = orderBuy.insertId;
+            const queryOrderBuy = 'INSERT INTO orderBuy(orderDate, totalPrice, idClient, idAddressClient, idStatusOrder) VALUES (NOW(), ?, ? , ?, ?)'
 
+            const [orderBuy] = await connection.query( queryOrderBuy, [ priceOrder, clientID, addressMailID, statusOrderID]);
+
+            const orderID = orderBuy.insertId;
             return{
                 orderID,
                 message:{ message:
@@ -29,10 +40,10 @@ class TargetCart{
         }
     }
 
-    static async insertDetailsOrder(quantity, productPrice, orderID, productID){
+    static async insertDetailsOrder(quantityCart, productPrice, orderID, productID){
         try{
             const queryInsertDetails = 'INSERT INTO orderbuydetails(quantity, priceAtPurchase, idOrderBuy, idProduct) VALUES (?,?,?,?)'
-            const resultQuery = await connection.query(queryInsertDetails, [quantity, productPrice, orderID, productID])
+            const [resultQuery] = await connection.query(queryInsertDetails, [quantityCart, productPrice, orderID, productID])
 
             return{
                 success: true,

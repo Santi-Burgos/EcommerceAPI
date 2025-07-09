@@ -12,16 +12,24 @@ configDotenv();
 
 export const paymentController = async (req, res) => {
     try {
-      
-    
       const clientID = 12;
-      const  addressID = 41;
+      const  addressMailID = 41;
+
       // req.body ADDRESSID
       // const clientID = req.user.idUser
+
       const queryCart = await TargetCart.selectCartForPay(clientID);
 
-      const createOrder = await TargetCart.insertOrder(clientID, addressID); 
+      console.log(queryCart)
+
+      const querySumCart = await TargetCart.totalPrice(clientID)
+
+      const priceOrder = querySumCart.totalPrice
+      
+      const createOrder = await TargetCart.insertOrder(priceOrder, clientID, addressMailID); 
       const orderID = createOrder.orderID
+
+
 
       for(const product of queryCart){
 
@@ -29,12 +37,31 @@ export const paymentController = async (req, res) => {
       const productPrice = product.productPrice
       const productID = product.idProduct
 
+        console.log(quantityCart)
+        console.log(productPrice)
+        console.log(productID)
+
+
       const stock = await stockAvalible(quantityCart, productID)
       if(!stock){
         return stock
       }
-      await TargetCart.insertDetailsOrder(quantityCart, productPrice,orderID, productID)
-      await Stock.reservedStock(quantityCart, productID)
+      
+      
+      const details = await TargetCart.insertDetailsOrder(quantityCart, productPrice, orderID, productID)
+      
+      
+      if(!details) {console.log('no se ha podido crear detalle');}
+      else { console.log('detalle creado')}
+
+      const haveStock = await Stock.reservedStock(quantityCart, productID)
+      if(!haveStock.success){
+        console.log(haveStock.message)
+      }else{
+        console.log(haveStock.message)
+      }
+
+
     } 
         const client = new MercadoPagoConfig({
                 accessToken: process.env.MERCADOPAGO_API_KEY,
@@ -65,13 +92,14 @@ export const paymentController = async (req, res) => {
     console.log(preference)
 
     const resultPayment = await payment.create( {body: preference} );
+    console.log(resultPayment.init_point)
+
 
     if(resultPayment){
       return{
         success: true
       }
     }
-
   }catch(err){
         return{
             sucess: false,
