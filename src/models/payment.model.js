@@ -47,10 +47,12 @@ class TargetCart{
         try{
             const queryInsertPayer = 'INSERT INTO  payer(idPayer, payerEmail, payerFirstName, payerLastName, payerIdentification, payerPhone) VALUES(?, ?, ?, ?, ?, ?) '
             const resultInsertPayer = await connection.query(queryInsertPayer, [objectPayer])
-
+            const payerID = resultInsertPayer.insertId;
+            
             return{
                 success: true,
-                data: resultInsertPayer
+                data: resultInsertPayer,
+                payerID: payerID
             }
         }catch(error){
             throw new Error('Error al crear el payer', + error.message)
@@ -61,6 +63,7 @@ class TargetCart{
         try{
             const queryInsertPayment = 'INSERT INTO `payment`(`idPayment`, `authorizationCode`, `paymentStatus`, `paymentDetails`, `paymentDateApproved`, `paymentLastFourDigits`, `paymentOrderId`, `idPayer`, `idOrderBuy`, `paymentTransactionAmout`, `paymentNetReceivedAmount`) VALUES (?,?,?,?,?,?,?,?,?,?,?) '
             const resultInsertPaymet = await connection.query(queryInsertPayment, [objectPayment])
+            
 
             return{
                 success: true,

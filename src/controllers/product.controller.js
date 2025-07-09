@@ -19,7 +19,6 @@ export const createProductController = async(req)=>{
                 }
             }
         }
-
         const productData = {
         ...validationProduct.data,
             images,

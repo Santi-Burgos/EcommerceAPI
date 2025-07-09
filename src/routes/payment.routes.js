@@ -1,11 +1,12 @@
 import express from 'express'
 import {paymentController, receiveWebhook} from '../controllers/payment.controller.js'
+import { createOrderView, paymentView } from '../views/payment.view.js';
 
 const paymentRoutes = express.Router();
 
 paymentRoutes.post('/create-order', async(req, res)=>{
     const result = paymentController(req)
-    res.send('creando orden')
+    createOrderView(result, res)
 });
 
 paymentRoutes.get('/success',  (req, res)=>{
@@ -18,6 +19,9 @@ paymentRoutes.get('/pending', (req, res)=>{
 
 })
 
-paymentRoutes.post('/webhook', receiveWebhook)
+paymentRoutes.post('/webhook', async(req, res) =>{
+    const result = receiveWebhook(req)
+    paymentView(result, res)
+})
 
 export default paymentRoutes

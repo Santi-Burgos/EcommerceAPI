@@ -15,6 +15,8 @@ export const paymentController = async (req, res) => {
       
     
       const clientID = 12;
+      const  addressID = 41;
+      // req.body ADDRESSID
       // const clientID = req.user.idUser
       const queryCart = await TargetCart.selectCartForPay(clientID);
 
@@ -56,13 +58,18 @@ export const paymentController = async (req, res) => {
         pending: "http://localhost:3000/api/payment/pending",
         success: "http://localhost:3000/api/payment/success",
       },
-      notification_url: "https://bad6-168-90-74-100.ngrok-free.app/api/payment/webhook"
-      
+      notification_url: "https://b0299621273a.ngrok-free.app/api/payment/webhook",
+      external_reference: orderID
     };
+    
+    console.log(preference)
+
     const resultPayment = await payment.create( {body: preference} );
 
     if(resultPayment){
-        console.log(resultPayment);
+      return{
+        success: true
+      }
     }
 
   }catch(err){
@@ -75,9 +82,7 @@ export const paymentController = async (req, res) => {
             }
         }
     }
-};
-
-// FALTA RECIBIR EL ORDER ID 
+}; 
 
 export const receiveWebhook = async(req, res) =>{
     const paymentId = req.body.data?.id
@@ -90,6 +95,8 @@ export const receiveWebhook = async(req, res) =>{
         });
         const payment = await response.json();
         
+        const orderID = payment.external_reference
+
         const objectPayer = {
           idPayer: payment.payer.id,
           payerFirstName: payment.payer.first_name,
@@ -98,21 +105,26 @@ export const receiveWebhook = async(req, res) =>{
           payerPhone: payment.payer.phone.number,
         }
         
+        const payerData = await TargetCart.insertPayer(objectPayer);
+
+        const payerID = payerData.payerID
+
         const paymentStatus = payment.satus 
 
         const objectPayment = {
           idPayment: payment.id,
           authorizationCode: payment.authorization_code,
-          paymentStatus,
+          paymentStatus:paymentStatus,
           paymentDetails: payment.status_details,
           paymentDateApproved: payment.date_approved, 
           paymentLastFourDigits: payment.card.last_four_digits,
           paymentTransactionAmount: payment.transaction_details.installment_amount,
-          paymentNetReceivedAmount: payment.transaction_details.net_received_amount
+          paymentNetReceivedAmount: payment.transaction_details.net_received_amount,
+          idOrderBuy: orderID,
+          idPayer: payerID
         }
 
 
-        await TargetCart.insertPayer(objectPayer);
         const paymentResult = await TargetCart.insertPayment(objectPayment);
 
         let statusOrder;
