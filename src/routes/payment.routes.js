@@ -5,7 +5,7 @@ import { createOrderView, paymentView } from '../views/payment.view.js';
 const paymentRoutes = express.Router();
 
 paymentRoutes.post('/create-order', async(req, res)=>{
-    const result = paymentController(req)
+    const result = await paymentController(req)
     createOrderView(result, res)
 });
 
@@ -20,7 +20,7 @@ paymentRoutes.get('/pending', (req, res)=>{
 })
 
 paymentRoutes.post('/webhook', async(req, res) =>{
-    const result = receiveWebhook(req)
+    const result = await receiveWebhook(req, res)
     paymentView(result, res)
 })
 

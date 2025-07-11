@@ -4,6 +4,7 @@ import { config as configDotenv } from 'dotenv';
 import fetch from "node-fetch";
 import Stock from "../models/stock.model.js"
 import { stockAvalible } from "../helper/stockAvailable.helper.js";
+import { error } from "console";
 
 configDotenv();
 
@@ -101,72 +102,130 @@ export const paymentController = async (req, res) => {
     }
 }; 
 
-export const receiveWebhook = async(req, res) =>{
-    const paymentId = req.body.data?.id
-    if(!paymentId) return res.sendStatus(400)
-      try{
-        const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`,{
-            headers:{
-              Authorization: `Bearer ${process.env.MERCADOPAGO_API_KEY}`
-            }
-        });
-        const payment = await response.json();
-        
-        const orderID = payment.external_reference
+export const receiveWebhook = async (req, res) => {
+  try {
+    const id = req.body.data?.id || req.query.id || req.body.id;
+    const type = req.body.type || req.body.topic || req.query.type || req.query.topic
 
-        const objectPayer = {
-          idPayer: payment.payer.id,
-          payerFirstName: payment.payer.first_name,
-          payerLastName: payment.payer.last_name,
-          payerIdentification: payment.payer.identification.number,
-          payerPhone: payment.payer.phone.number,
-        }
-        
-        const payerData = await TargetCart.insertPayer(objectPayer);
-
-        const payerID = payerData.payerID
-
-        const paymentStatus = payment.satus 
-
-        const objectPayment = {
-          idPayment: payment.id,
-          authorizationCode: payment.authorization_code,
-          paymentStatus:paymentStatus,
-          paymentDetails: payment.status_details,
-          paymentDateApproved: payment.date_approved, 
-          paymentLastFourDigits: payment.card.last_four_digits,
-          paymentTransactionAmount: payment.transaction_details.installment_amount,
-          paymentNetReceivedAmount: payment.transaction_details.net_received_amount,
-          idOrderBuy: orderID,
-          idPayer: payerID
-        }
-
-
-        const paymentResult = await TargetCart.insertPayment(objectPayment);
-
-        let statusOrder;
-        if(paymentStatus === 'approved'){
-            statusOrder = 2;
-        }else{
-          statusOrder = 3
-        }
-
-        await TargetCart.editStatusOrder(statusOrder, orderID)
-
-        return{
-          success: true,
-          data: paymentResult,
-          message: ('Insercion del payer, payment, y cambio de estado en order hechos correctamente')
-        }
-      }catch(err){
-        return{
-            sucess: false,
-            error:{
-                name: err.name || 'InternalError',
-                message: err.message || 'Unexpected error',
-                stack: err.stack
-            }
-        }
+    if (!id) {
+      console.warn("❌ Webhook inválido: no se recibió ID de pago");
+      return res.status(400).json({ error: "Missing ID" });
     }
 
+    if(type === 'payment'){
+       await safeProcessPayment(id)
+    }else if(type === 'merchant_order'){
+      const moResponse = await fetch(`https://api.mercadopago.com/merchant_orders/${id}`, {
+        headers: { Authorization: `Bearer ${process.env.MERCADOPAGO_API_KEY}` }
+      })
+      
+      const merchantOrder = await moResponse.json();
+      if(merchantOrder && merchantOrder.payments && merchantOrder.payments.length > 0){
+        for(const tryPay of merchantOrder.payments){
+          if(tryPay && tryPay.id){
+            await safeProcessPayment(tryPay.id)
+          }else{
+            console.warn("Payment sin id en merchant_order")
+          }
+        }
+      }else{
+        console.warn("merchant_order sin payment asociados")
+      }
+    }else{
+      console.log("evento ignorado, type:", type)
+    }
+    console.log("Webhook procesado correctamente")
+  }catch(err){
+    console.error("Error al procesar el webhook", err.message)
+    if(!res.headersSent){
+      return res.sendStatus(200)
+    }
+  }
+
+
+    // SAFE FUNCTION
+async function safeProcessPayment(paymentId) {
+  try {
+    if (!paymentId) {
+      console.warn("Intento de procesar paymentId vacío");
+      return;
+    }
+    // const exists = await TargetCart.findPaymentById(paymentId);
+    // if (exists) {
+    //   console.log("Payment ya procesado, id:", paymentId);
+    //   return;
+    // }
+
+    const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.MERCADOPAGO_API_KEY}`
+      }
+    });
+
+    const payment = await response.json();
+    if (!payment || !payment.status) {
+      console.warn("payment no encontrado", payment, paymentId);
+      return;
+    }
+
+    const orderID = payment.external_reference;
+    const paymentStatus = payment.status;
+
+    if (!payment.payer || !payment.payer.id) {
+      console.warn("payment sin payer válido", payment);
+      return;
+    }
+
+    const objectPayer = {
+      idPayer: payment.payer.id,
+      payerEmail: payment.payer.email,
+      payerFirstName: payment.payer.first_name,
+      payerLastName: payment.payer.last_name,
+      payerIdentification: payment.payer.identification?.number,
+      payerPhone: payment.payer.phone?.number,
+    };
+
+    let payerData;
+    try {
+      payerData = await TargetCart.insertPayer(objectPayer);
+    } catch (err) {
+      console.error(err.message);
+      return { success: false, error: "No se pudo crear el payer" };
+    }
+     
+    const payerID = payerData.payerID;
+
+    const objectPayment = {
+      idPayment: payment.id,
+      authorizationCode: payment.authorization_code,
+      paymentStatus,
+      paymentDetails: payment.status_detail,
+      paymentDateApproved: payment.date_approved,
+      paymentLastFourDigits: payment.card?.last_four_digits || null,
+      paymentTransactionAmount: payment.transaction_details?.installment_amount,
+      paymentNetReceivedAmount: payment.transaction_details?.net_received_amount,
+      idOrderBuy: orderID,
+      idPayer: payerID,
+    };
+
+    let paymentData
+    try{
+    paymentData = await TargetCart.insertPayment(objectPayment);
+    } catch(err){
+      return { success: false, error: "No se pudo crear el payment" };
+    }
+
+    if (paymentStatus === 'approved') {
+      await TargetCart.editStatusOrder(2, orderID);
+    } else if (paymentStatus === 'rejected') {
+      await TargetCart.editStatusOrder(3, orderID);
+    }
+    console.log("✅ Payment procesado correctamente");
+    return;
+
+  } catch (err) {
+    console.error("❌ Error al procesar el payment:", err.message);
+    return;
+  }
 }
+};

@@ -54,27 +54,46 @@ class TargetCart{
         }
     }
 
-    static async insertPayer({objectPayer}){
+    static async insertPayer(objectPayer){
         try{
+            const values = [
+                objectPayer.idPayer, 
+                objectPayer.payerEmail, 
+                objectPayer.payerFirstName, 
+                objectPayer.payerLastName, 
+                objectPayer.payerIdentification, 
+                objectPayer.payerPhone
+            ]
             const queryInsertPayer = 'INSERT INTO  payer(idPayer, payerEmail, payerFirstName, payerLastName, payerIdentification, payerPhone) VALUES(?, ?, ?, ?, ?, ?) '
-            const resultInsertPayer = await connection.query(queryInsertPayer, [objectPayer])
+            const [resultInsertPayer] = await connection.query(queryInsertPayer, values)
             const payerID = resultInsertPayer.insertId;
-            
             return{
                 success: true,
                 data: resultInsertPayer,
                 payerID: payerID
             }
         }catch(error){
-            throw new Error('Error al crear el payer', + error.message)
+            throw new Error('Error al crear el payer: ' + error.message)
         }
     }
 
-    static async insertPayment({objectPayment}){
+    static async insertPayment(objectPayment){
+        const values = [
+            objectPayment.idPayment,
+            objectPayment.authorizationCode,
+            objectPayment.paymentStatus,
+            objectPayment.paymentDetails,
+            objectPayment.PaymentDateApproved,
+            objectPayment.paymentLastFourDigits,
+            objectPayment.paymentTransactionAmount,
+            objectPayment.paymentNetReceivedAmount,
+            objectPayment.idOrdenBuy,
+            objectPayment.idPayer
+        ]
+
         try{
             const queryInsertPayment = 'INSERT INTO `payment`(`idPayment`, `authorizationCode`, `paymentStatus`, `paymentDetails`, `paymentDateApproved`, `paymentLastFourDigits`, `paymentOrderId`, `idPayer`, `idOrderBuy`, `paymentTransactionAmout`, `paymentNetReceivedAmount`) VALUES (?,?,?,?,?,?,?,?,?,?,?) '
-            const resultInsertPaymet = await connection.query(queryInsertPayment, [objectPayment])
-            
+            const resultInsertPaymet = await connection.query(queryInsertPayment, values)   
 
             return{
                 success: true,
