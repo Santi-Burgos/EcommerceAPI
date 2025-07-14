@@ -150,11 +150,11 @@ async function safeProcessPayment(paymentId) {
       console.warn("Intento de procesar paymentId vacío");
       return;
     }
-    // const exists = await TargetCart.findPaymentById(paymentId);
-    // if (exists) {
-    //   console.log("Payment ya procesado, id:", paymentId);
-    //   return;
-    // }
+    const exists = await TargetCart.findPaymentById(paymentId);
+    if (exists) {
+      console.log("Payment ya procesado, id:", paymentId);
+      return;
+    }
 
     const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
       headers: {
@@ -175,6 +175,8 @@ async function safeProcessPayment(paymentId) {
       console.warn("payment sin payer válido", payment);
       return;
     }
+
+    //validar existencia del payer, 
 
     const objectPayer = {
       idPayer: payment.payer.id,
@@ -207,6 +209,8 @@ async function safeProcessPayment(paymentId) {
       idOrderBuy: orderID,
       idPayer: payerID,
     };
+
+    console.log(objectPayment)
 
     let paymentData
     try{

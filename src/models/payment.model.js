@@ -1,3 +1,4 @@
+import { connect } from "http2";
 import connection from "../config/database.js";
 
 class TargetCart{
@@ -115,6 +116,19 @@ class TargetCart{
             }
         }catch(error){
             throw new Error('Error al cambiar el estado de la orden' + error.message)
+        }
+    }
+
+    static async findPaymentById(paymentId){
+        try{
+            const queryFindPayment = 'SELECT * FROM payment WHERE idPayment = ?'
+            const [rows] = await connection.query(queryFindPayment, [paymentId])
+            return{
+                success: true,
+                data: rows
+            }
+        }catch(error){
+            throw new Error('Error al buscar paymentID' + error.message)
         }
     }
 
