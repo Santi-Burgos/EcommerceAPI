@@ -84,30 +84,30 @@ class TargetCart{
             objectPayment.authorizationCode,
             objectPayment.paymentStatus,
             objectPayment.paymentDetails,
-            objectPayment.PaymentDateApproved,
+            objectPayment.paymentDateApproved,
             objectPayment.paymentLastFourDigits,
+            objectPayment.idPayer,
+            objectPayment.idOrderBuy,
             objectPayment.paymentTransactionAmount,
             objectPayment.paymentNetReceivedAmount,
-            objectPayment.idOrdenBuy,
-            objectPayment.idPayer
         ]
-
+        console.log(values)
         try{
-            const queryInsertPayment = 'INSERT INTO `payment`(`idPayment`, `authorizationCode`, `paymentStatus`, `paymentDetails`, `paymentDateApproved`, `paymentLastFourDigits`, `paymentOrderId`, `idPayer`, `idOrderBuy`, `paymentTransactionAmout`, `paymentNetReceivedAmount`) VALUES (?,?,?,?,?,?,?,?,?,?,?) '
+            const queryInsertPayment = 'INSERT INTO `payment`(`idPayment`, `authorizationCode`, `paymentStatus`, `paymentDetails`, `paymentDateApproved`, `paymentLastFourDigits`, `idPayer`, `idOrderBuy`, `paymentTransactionAmount`, `paymentNetReceivedAmount`) VALUES (?,?,?,?,?,?,?,?,?,?) '
             const resultInsertPaymet = await connection.query(queryInsertPayment, values)   
-
+            console.log(resultInsertPaymet)
             return{
                 success: true,
                 data: resultInsertPaymet
             }
         }catch(error){
-            throw new Error('Error al crear payment', + error.message)
+            throw new Error('Error al crear payment: ' + error.message);
         }
     }
 
     static async editStatusOrder(statusOrder, orderID){
         try{
-            const editStatus = 'UPDATE `orderbuy` SET idStatusOrder = ? WHERE idOrder = ?'
+            const editStatus = 'UPDATE `orderbuy` SET idStatusOrder = ? WHERE idOrderBuy = ?'
             const resultEditStatus = await connection.query(editStatus, [statusOrder, orderID])
             
             return{
@@ -123,15 +123,21 @@ class TargetCart{
         try{
             const queryFindPayment = 'SELECT * FROM payment WHERE idPayment = ?'
             const [rows] = await connection.query(queryFindPayment, [paymentId])
-            return{
-                success: true,
-                data: rows
-            }
+            return rows[0]
         }catch(error){
             throw new Error('Error al buscar paymentID' + error.message)
         }
     }
 
+    static async findPayerById(payerID){
+        try{
+            const queryFindPayer = 'SELECT * FROM payer WHERE idPayer =?'
+            const [rows] = await connection.query(queryFindPayer, [payerID])
+            return rows[0]
+        }catch(error){
+            throw new Error('Error al buscar al payerID' + error.message)
+        }
+    }
 }
 
 

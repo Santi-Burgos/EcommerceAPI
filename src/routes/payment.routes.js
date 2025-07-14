@@ -19,9 +19,10 @@ paymentRoutes.get('/pending', (req, res)=>{
 
 })
 
-paymentRoutes.post('/webhook', async(req, res) =>{
-    const result = await receiveWebhook(req, res)
+paymentRoutes.post('/webhook', async(req, res, next) =>{
+    const result = await receiveWebhook(req)
     paymentView(result, res)
 })
 
 export default paymentRoutes
+

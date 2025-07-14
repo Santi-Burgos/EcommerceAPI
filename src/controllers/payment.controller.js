@@ -75,7 +75,7 @@ export const paymentController = async (req, res) => {
         pending: "http://localhost:3000/api/payment/pending",
         success: "http://localhost:3000/api/payment/success",
       },
-      notification_url: "https://b0299621273a.ngrok-free.app/api/payment/webhook",
+      notification_url: "https://d0330e551a1d.ngrok-free.app/api/payment/webhook",
       external_reference: orderID
     };
     
@@ -108,8 +108,9 @@ export const receiveWebhook = async (req, res) => {
     const type = req.body.type || req.body.topic || req.query.type || req.query.topic
 
     if (!id) {
-      console.warn("❌ Webhook inválido: no se recibió ID de pago");
-      return res.status(400).json({ error: "Missing ID" });
+      console.warn("Webhook inválido: no se recibió ID de pago");
+      return { status: 400, body: { error: "Missing ID" } };
+      //return res.status(400).json({ error: "Missing ID" });
     }
 
     if(type === 'payment'){
@@ -129,27 +130,30 @@ export const receiveWebhook = async (req, res) => {
           }
         }
       }else{
-        console.warn("merchant_order sin payment asociados")
+        console.warn("merchant_order sin payment asocia dos")
       }
     }else{
       console.log("evento ignorado, type:", type)
     }
     console.log("Webhook procesado correctamente")
+    return { status: 200, body: { success: true, message: "Procesado correctamente" } }
+//    return res.sendStatus(200);
   }catch(err){
     console.error("Error al procesar el webhook", err.message)
-    if(!res.headersSent){
-      return res.sendStatus(200)
-    }
+    //if(!res.headersSent){
+      return { status: 200 };
+      //return res.sendStatus(200)
+    //}
   }
 
 
-    // SAFE FUNCTION
 async function safeProcessPayment(paymentId) {
   try {
     if (!paymentId) {
       console.warn("Intento de procesar paymentId vacío");
       return;
     }
+
     const exists = await TargetCart.findPaymentById(paymentId);
     if (exists) {
       console.log("Payment ya procesado, id:", paymentId);
@@ -176,59 +180,66 @@ async function safeProcessPayment(paymentId) {
       return;
     }
 
-    //validar existencia del payer, 
+    const payerID = payment.payer.id
+    const dataPayer = await TargetCart.findPayerById(payerID)
 
-    const objectPayer = {
-      idPayer: payment.payer.id,
-      payerEmail: payment.payer.email,
-      payerFirstName: payment.payer.first_name,
-      payerLastName: payment.payer.last_name,
-      payerIdentification: payment.payer.identification?.number,
-      payerPhone: payment.payer.phone?.number,
-    };
+    if(!dataPayer){
+      const objectPayer = {
+        idPayer: payerID,
+        payerEmail: payment.payer.email,
+        payerFirstName: payment.payer.first_name,
+        payerLastName: payment.payer.last_name,
+        payerIdentification: payment.payer.identification?.number,
+        payerPhone: payment.payer.phone?.number,
+      };
 
-    let payerData;
-    try {
-      payerData = await TargetCart.insertPayer(objectPayer);
-    } catch (err) {
-      console.error(err.message);
-      return { success: false, error: "No se pudo crear el payer" };
-    }
-     
-    const payerID = payerData.payerID;
+      try {
+          await TargetCart.insertPayer(objectPayer);
+          console.log(`Payer creado: ${payerID}`);
+        } catch (err) {
+          console.error("Error al crear payer:", err.message);
+          return;
+        }
+      } else {
+        console.log('Payer existente asociado a la id:', payerID);
+      }
+      
+      const paymentID = payment.id
 
-    const objectPayment = {
-      idPayment: payment.id,
-      authorizationCode: payment.authorization_code,
-      paymentStatus,
-      paymentDetails: payment.status_detail,
-      paymentDateApproved: payment.date_approved,
-      paymentLastFourDigits: payment.card?.last_four_digits || null,
-      paymentTransactionAmount: payment.transaction_details?.installment_amount,
-      paymentNetReceivedAmount: payment.transaction_details?.net_received_amount,
-      idOrderBuy: orderID,
-      idPayer: payerID,
-    };
+      const existingPayment = await TargetCart.findPaymentById(paymentID);
 
-    console.log(objectPayment)
+      if (existingPayment) {
+          const objectPayment = {
+            idPayment: paymentID,
+            authorizationCode: payment.authorization_code,
+            paymentStatus,
+            paymentDetails: payment.status_detail,
+            paymentDateApproved: payment.date_approved,
+            paymentLastFourDigits: payment.card?.last_four_digits || null,
+            paymentTransactionAmount: payment.transaction_details?.installment_amount,
+            paymentNetReceivedAmount: payment.transaction_details?.net_received_amount,
+            idOrderBuy: orderID,
+            idPayer: payerID,
+          };
 
-    let paymentData
-    try{
-    paymentData = await TargetCart.insertPayment(objectPayment);
-    } catch(err){
-      return { success: false, error: "No se pudo crear el payment" };
-    }
+        try {
+          await TargetCart.insertPayment(objectPayment);
+        } catch(err){
+          console.error("No se pudo crear el payment:", err.message);
+          return;
+        }
+      }
 
     if (paymentStatus === 'approved') {
       await TargetCart.editStatusOrder(2, orderID);
     } else if (paymentStatus === 'rejected') {
       await TargetCart.editStatusOrder(3, orderID);
     }
-    console.log("✅ Payment procesado correctamente");
-    return;
+    console.log("Payment procesado correctamente");
+    return { success: true, message: "Payment creado correctamente" }
 
   } catch (err) {
-    console.error("❌ Error al procesar el payment:", err.message);
+    console.error("Error al procesar el payment:", err.message);
     return;
   }
 }
