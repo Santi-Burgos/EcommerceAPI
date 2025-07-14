@@ -75,7 +75,7 @@ export const paymentController = async (req, res) => {
         pending: "http://localhost:3000/api/payment/pending",
         success: "http://localhost:3000/api/payment/success",
       },
-      notification_url: "https://d0330e551a1d.ngrok-free.app/api/payment/webhook",
+      notification_url: "https://3d9219e01b92.ngrok-free.app/api/payment/webhook",
       external_reference: orderID
     };
     
@@ -110,7 +110,6 @@ export const receiveWebhook = async (req, res) => {
     if (!id) {
       console.warn("Webhook inválido: no se recibió ID de pago");
       return { status: 400, body: { error: "Missing ID" } };
-      //return res.status(400).json({ error: "Missing ID" });
     }
 
     if(type === 'payment'){
@@ -137,15 +136,13 @@ export const receiveWebhook = async (req, res) => {
     }
     console.log("Webhook procesado correctamente")
     return { status: 200, body: { success: true, message: "Procesado correctamente" } }
-//    return res.sendStatus(200);
   }catch(err){
     console.error("Error al procesar el webhook", err.message)
-    //if(!res.headersSent){
-      return { status: 200 };
-      //return res.sendStatus(200)
-    //}
+      return { status: 200, body:{success: true, message: "Pago no procesado"}};
+
   }
 
+  //mover a otro archivo
 
 async function safeProcessPayment(paymentId) {
   try {
@@ -208,19 +205,21 @@ async function safeProcessPayment(paymentId) {
 
       const existingPayment = await TargetCart.findPaymentById(paymentID);
 
-      if (existingPayment) {
-          const objectPayment = {
-            idPayment: paymentID,
-            authorizationCode: payment.authorization_code,
-            paymentStatus,
-            paymentDetails: payment.status_detail,
-            paymentDateApproved: payment.date_approved,
-            paymentLastFourDigits: payment.card?.last_four_digits || null,
-            paymentTransactionAmount: payment.transaction_details?.installment_amount,
-            paymentNetReceivedAmount: payment.transaction_details?.net_received_amount,
-            idOrderBuy: orderID,
-            idPayer: payerID,
-          };
+      if (!existingPayment) {
+        const objectPayment = {
+          idPayment: paymentID,
+          authorizationCode: payment.authorization_code,
+          paymentStatus,
+          paymentDetails: payment.status_detail,
+          paymentDateApproved: payment.date_approved,
+          paymentLastFourDigits: payment.card?.last_four_digits || null,
+          paymentTransactionAmount: payment.transaction_details?.installment_amount,
+          paymentNetReceivedAmount: payment.transaction_details?.net_received_amount,
+          idOrderBuy: orderID,
+          idPayer: payerID,
+        };
+        
+        console.log("No existe payment, se va a insertar:", objectPayment);
 
         try {
           await TargetCart.insertPayment(objectPayment);

@@ -38,3 +38,46 @@ export const insertProductCartController = async(req) =>{
         }
     }
 }
+export const editItemCartController = async(req)=>{
+    try{
+        const {quantityCart, cartID} = req.body;
+        const clientID = req.user.idUser;
+
+        const editItemCart = await Cart.editItemCart(quantityCart, cartID, clientID)
+        return{
+            success: true,
+            data: editItemCart
+        }
+
+    }catch(error){
+        return{
+            success: false,
+            error:{
+                name: err.name || 'InternalError',
+                message: err.message||'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
+}
+export const deleteProductCartController = async(req) =>{
+    try{
+        const cartID = req.params.id;
+        const clientID = req.user.idUser;
+
+        const deleteItemCart = await Cart.deleteProductCart(cartID, clientID);
+        return{
+            success: true,
+            data: deleteItemCart
+        }
+    }catch(err){
+        return{
+            success: false,
+            error:{
+                name: err.name || 'InternalError',
+                message: err.message||'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
+}

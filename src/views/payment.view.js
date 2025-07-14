@@ -31,9 +31,13 @@ export const createOrderView = (result, res) =>{
 //   });
 // };
 export const paymentView = (result = {}, res) => {
-  if (!result.success) {
-    return res.status(result.status || 500).json(result.body || {});
+  const { status = 500, body = {} } = result;
+
+  if (!body.success) {                
+    console.log('Falló el pago, enviando error');
+    return res.status(status).json(body);
   }
-  console.log('200 ok enviado')
-  return res.status(result.status || 200).json(result.body || {});
+
+  console.log('200 ok enviado');
+  return res.status(status).json(body);
 };

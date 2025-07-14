@@ -19,6 +19,27 @@ class Cart{
         }
     }
 
+    static async editItemCart(quantityCart, cartID, clientID){
+        try{
+            const queryEditCartItem = 'UPDATE `cart` SET `quantityCart`= ? WHERE idCart = ? AND idClient =?'
+            const resultEditCart = await connection.query(queryEditCartItem, [quantityCart, cartID, clientID])
+        }catch(error){
+            throw new Error('Error al editar item del carro' + error.message)
+        }
+    }
+
+    static async deleteProductCart(cartID, clientID){
+        try{
+            const queryDeleteItemCart = 'DELETE FROM `cart` WHERE idCart = ? AND idClient = ?'
+            const resultQuery = await connection.query(queryDeleteItemCart, [cartID, clientID])
+            return{
+                success: true,
+                data: resultQuery
+            }
+        }catch(error){
+            throw new Error('Error al elimnar item del carrito' + error.message)
+        }
+    }
     
 
 }

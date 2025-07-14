@@ -91,11 +91,11 @@ class TargetCart{
             objectPayment.paymentTransactionAmount,
             objectPayment.paymentNetReceivedAmount,
         ]
-        console.log(values)
+
         try{
             const queryInsertPayment = 'INSERT INTO `payment`(`idPayment`, `authorizationCode`, `paymentStatus`, `paymentDetails`, `paymentDateApproved`, `paymentLastFourDigits`, `idPayer`, `idOrderBuy`, `paymentTransactionAmount`, `paymentNetReceivedAmount`) VALUES (?,?,?,?,?,?,?,?,?,?) '
             const resultInsertPaymet = await connection.query(queryInsertPayment, values)   
-            console.log(resultInsertPaymet)
+
             return{
                 success: true,
                 data: resultInsertPaymet
