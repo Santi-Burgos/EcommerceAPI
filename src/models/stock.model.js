@@ -2,6 +2,7 @@ import connection from "../config/database.js";
 
 
 class Stock{
+
     static async reservedStock (quantity, productID){ 
         try { 
             const queryReservedStock = 'UPDATE stockproduct SET quantity= quantity - ? WHERE idProduct = ? AND quantity >= ?'

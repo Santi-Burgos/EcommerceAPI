@@ -4,20 +4,17 @@ import { config as configDotenv } from 'dotenv';
 import fetch from "node-fetch";
 import Stock from "../models/stock.model.js"
 import { stockAvalible } from "../helper/stockAvailable.helper.js";
-import { error } from "console";
+
 
 configDotenv();
 
 
 //CREATE ORDER    
 
-export const paymentController = async (req, res) => {
+export const paymentController = async (req) => {
     try {
-      const clientID = 12;
-      const  addressMailID = 41;
-
-      // req.body ADDRESSID
-      // const clientID = req.user.idUser
+      const clientID = req.user.idUser
+      const addressMailID = req.body
 
       const queryCart = await TargetCart.selectCartForPay(clientID);
 
@@ -36,6 +33,15 @@ export const paymentController = async (req, res) => {
       const productPrice = product.productPrice
       const productID = product.idProduct
 
+      const isPrice = await TargetCart.checkPriceProduct(productID, productPrice)
+      if(!isPrice){ 
+        return {
+          success: false,
+          error: {
+            message: `El precio del producto con la id ${productID} ha cambiado, por favor actualice su carrito`
+          }
+        }
+      }
       const stock = await stockAvalible(quantityCart, productID)
       if(!stock){
         return stock
@@ -151,12 +157,6 @@ async function safeProcessPayment(paymentId) {
       return;
     }
 
-    const exists = await TargetCart.findPaymentById(paymentId);
-    if (exists) {
-      console.log("Payment ya procesado, id:", paymentId);
-      return;
-    }
-
     const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
       headers: {
         Authorization: `Bearer ${process.env.MERCADOPAGO_API_KEY}`
@@ -227,6 +227,8 @@ async function safeProcessPayment(paymentId) {
           console.error("No se pudo crear el payment:", err.message);
           return;
         }
+      }else{
+        console.log("Payment ya existe, no se inserta:", existingPayment);
       }
 
     if (paymentStatus === 'approved') {

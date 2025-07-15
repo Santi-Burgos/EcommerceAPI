@@ -138,6 +138,19 @@ class TargetCart{
             throw new Error('Error al buscar al payerID' + error.message)
         }
     }
+
+    static async checkPriceProduct(productID, productPrice){
+        try{
+            const queryCheckPrice = 'SELECT productPrice FROM product WHERE idProduct = ?'
+            const [rows] = await connection.query(queryCheckPrice, [productID])
+            if(rows.length === 0) {
+                return false
+            }
+            return rows[0].productPrice === productPrice
+        }catch(error){
+            throw new Error('Error al verificar el precio del producto: ' + error.message)
+        }
+    }       
 }
 
 

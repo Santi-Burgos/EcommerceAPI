@@ -31,7 +31,6 @@ export const createAddressClientController = async(req) =>{
                 }
             };
         }
-
         addressToCreate.clientID = clientID;
 
         const addressCreate = await StreetAddress.createStreetAddress(addressToCreate);

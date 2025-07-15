@@ -23,6 +23,10 @@ class Cart{
         try{
             const queryEditCartItem = 'UPDATE `cart` SET `quantityCart`= ? WHERE idCart = ? AND idClient =?'
             const resultEditCart = await connection.query(queryEditCartItem, [quantityCart, cartID, clientID])
+            return{
+                success: true,
+                data: resultEditCart
+            }
         }catch(error){
             throw new Error('Error al editar item del carro' + error.message)
         }

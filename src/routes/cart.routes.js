@@ -15,7 +15,7 @@ cartRoutes.post('/push-to-cart/:id', authToken, async(req, res, next)=>{
 
 cartRoutes.put('/edit-item-cart/:id', authToken, async(req, res, next)=>{
     const result = await editItemCartController(req)
-    
+    editItemCartView(result, res)
 }
 )
 

@@ -30,7 +30,6 @@ export const editProfileImageController = async(req) =>{
 
 export const editProductImgController = async(req) =>{
     try{
-
         const {idProduct, idImgProduct} = req.body 
         const images = await mapUploadedImages(req.files); 
         
@@ -41,7 +40,6 @@ export const editProductImgController = async(req) =>{
             success: true,
             data:editImagesProduct
         }
-
 
     }catch(err){
         return{

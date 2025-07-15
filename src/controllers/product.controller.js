@@ -5,7 +5,6 @@ import { validateProductData } from '../validations/product.validations.js';
 
 export const createProductController = async(req)=>{
     try{
-
         const images = await mapUploadedImages(req.files);
         const validationProduct = validateProductData(req.body);
 

@@ -10,8 +10,6 @@ export const clientLogin = async(req) =>{
         const {addressMailClient, passwordClient} = req.body;
         const loginClient = await Search.byEmail(addressMailClient)
 
-
-
         if(!loginClient){
             return {
                 success: false,
@@ -45,7 +43,6 @@ export const clientLogin = async(req) =>{
     }
 }
 
-
 export const adminLogin = async(req) =>{
     try{
         const {adminAddressMail, passwordAdmin} = req.body;
@@ -57,10 +54,8 @@ export const adminLogin = async(req) =>{
                 error: {name: 'Admin not found' }
             }
         }
-    
 
-        const isMatch = await bcrypt.compare(passwordAdmin, loginAdmin.data.passwordAdmin)
-        
+        const isMatch = await bcrypt.compare(passwordAdmin, loginAdmin.data.passwordAdmin)  
         
         if(!isMatch){
             return{
