@@ -3,7 +3,7 @@ import connection from "../config/database.js";
 class Ticket{
     static async createTicketRoom(ticketID, adminID){
         try{
-            const statusTicketID = 1
+            const statusTicketID = 2 
             const queryCreateRoomTicket = 'INSERT INTO `ticketRoom`(`idTicket`,`idStatusTicket`, `idAdmin`) VALUES (?,?,?)';
             const resultQuery = await connection.query(queryCreateRoomTicket, [ticketID, statusTicketID, adminID])
             return{ 

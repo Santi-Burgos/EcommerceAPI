@@ -1,7 +1,4 @@
 export const createOrderView = (result, res) =>{
-
-    console.log(result)
-
     if(!result.success){
         return res.status(500).json({
             message: 'Error al crear la orden de pago',
@@ -15,21 +12,6 @@ export const createOrderView = (result, res) =>{
     })
 }
 
-// export const paymentView = (result, res) => {
-//   if (!result || result.success === false) {
-//     return res.status(500).json({
-//       message: 'Error al pagar',
-//       details: result?.error?.issues || JSON.stringify(result?.error || {})
-//     });
-//   }
-//    if (!res.headersSent) {
-//     return res.status(result.status || 200).json(result.body || {});
-//   }
-//   return res.status(200).json({
-//     message: 'Payment completed successfully',
-//     data: result.data
-//   });
-// };
 export const paymentView = (result = {}, res) => {
   const { status = 500, body = {} } = result;
 
