@@ -4,14 +4,20 @@ export const createTicketController = async(req) => {
     try {
         const clientID = req.user.idUser;
         const { descriptionTicket, productID } = req.body;
-        const ticket = await Ticket.createTicket(descriptionTicket, productID, clientID);
+        const createTicket = await Ticket.createTicket(descriptionTicket, productID, clientID);
         
-        if (!ticket.success) {
+        if (!createTicket.success) {
             return {
                 success: false,
-                error: ticket.error
+                error: createTicket.error
             };
         }
+
+        return{
+            success: true,
+            data: createTicket
+        }
+
     }catch(err){
         return {
             success: false,
@@ -28,10 +34,13 @@ export const createTicketController = async(req) => {
 
 export const openTicketRoomController = async(req) => {
     try {
-        const  ticketID  = req.body;
+        const  ticketID  = req.body.ticketId;
         const adminID = req.user.idUser;
+        
 
         const ticketRoom = await Ticket.createTicketRoom(ticketID, adminID);
+
+
         
         if (!ticketRoom.success) {
             return {
@@ -57,7 +66,7 @@ export const openTicketRoomController = async(req) => {
 }
 
 // los dos, anahdir un trigger
-export const messagesTicketRoom = async(req) =>{
+export const messagesTicketRoomController = async(req) =>{
     try{
         const isAdmin = req.user.idRol || null;
         const senderID = req.user.idUser

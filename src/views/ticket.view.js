@@ -8,9 +8,10 @@ export const createTicketView = (result, res) =>{
             stack: result.error?.stack
         });
     }
+
     return res.status(200).json({
         message: 'Ticket create succefully, pending',
-        data: data.result
+        data: result.data
     })
 }
 
@@ -26,7 +27,7 @@ export const openTicketRoomView = (result, res) =>{
     }
     return res.status(200).json({
         message: 'Open ticket succesfully',
-        data: data.result
+        data: result.data
     })
 }
 
@@ -42,6 +43,6 @@ export const messagesTicketRoomView = (result, res) =>{
     }
     return res.status(200).json({
         message: 'Send message succesfully',
-        data: data.result
+        data: result.data
     })
 }

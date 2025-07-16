@@ -35,3 +35,9 @@ export const loginAdminView = (result, res) =>{
     .json({message: 'Sesion iniciada con exito'
     })
 }
+
+export const logoutView = (res)=>{
+  res.clearCookie('accessToken').json({
+    message: 'Logout successfully'
+  })
+}

@@ -9,8 +9,12 @@ configDotenv();
 
 export const paymentController = async (req) => {
     try {
-      const clientID = req.user.idUser
-      const addressMailID = req.body
+
+      const clientID = 12;
+      const addressMailID = 41;
+
+      /* const clientID = req.user.idUser
+      const addressMailID = req.body */
 
       const queryCart = await TargetCart.selectCartForPay(clientID);
 
@@ -77,7 +81,7 @@ export const paymentController = async (req) => {
         pending: "http://localhost:3000/api/payment/pending",
         success: "http://localhost:3000/api/payment/success",
       },
-      notification_url: "https://3d9219e01b92.ngrok-free.app/api/payment/webhook",
+      notification_url: "https://29bc88c3d95d.ngrok-free.app/api/payment/webhook",
       external_reference: orderID
     };
     
