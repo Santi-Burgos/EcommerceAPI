@@ -1,6 +1,8 @@
 import connection from "../config/database.js";
 
 class Ticket{
+
+    //Crea la sala del ticket
     static async createTicketRoom(ticketID, adminID){
         try{
             const statusTicketID = 2 
@@ -14,7 +16,7 @@ class Ticket{
             throw new Error('Error al crear TicketRoom' + error.message)
         }
     }
-
+    //Descripcion general del ticket
     static async createTicket(descriptionTicket, productID, clientID){
         try{
             const statusTicketID = 1
@@ -29,7 +31,36 @@ class Ticket{
         }
     }
 
+    //Sale de message por el ticket
+    static async messagesRoom(messageTicket, isAdmin, senderID, ticketRoomID){
+        try{
+            const saveMessage = 'INSERT INTO `ticketmessage`(`messageDate`, `messageTicket`, `isAdmin`, `idSender`, `idTicketRoom`) VALUES (NOW(), ?, ?, ?, ?)'
+            const resultSaveMessage = await connection.query(saveMessage, [messageTicket, isAdmin, senderID, ticketRoomID])
 
+            return{
+                success: true,
+                data: resultSaveMessage
+            }
+        }catch(error){
+            throw new Error('Error al enviar el mensaje' + error.message)
+        }
+    }
+
+    //add trigger para que se actualice ticket en dos casos cuando se crea un ticket room y cuando se cambia el estado de ticket room
+
+    static async changeStatusTicket(ticketID){  
+        try{
+            const ticketStatusResolve = 'UPDATE `ticketroom` SET idStatusTicket = 2 WHERE idTicket = ?';
+            const statusTicketChange = await connection.query(ticketStatusResolve, ticketID);
+
+            return{
+                success: true, 
+                data: statusTicketChange
+            }
+        }catch(error){
+            throw new Error('Error al cambiar el estado del ticket' + error.message)
+        }
+    }
 }
 
 export default Ticket

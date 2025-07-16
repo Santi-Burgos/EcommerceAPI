@@ -5,11 +5,7 @@ import fetch from "node-fetch";
 import Stock from "../models/stock.model.js"
 import { stockAvalible } from "../helper/stockAvailable.helper.js";
 
-
 configDotenv();
-
-
-//CREATE ORDER    
 
 export const paymentController = async (req) => {
     try {
@@ -108,7 +104,7 @@ export const paymentController = async (req) => {
     }
 }; 
 
-export const receiveWebhook = async (req, res) => {
+export const receiveWebhook = async (req) => {
   try {
     const id = req.body.data?.id || req.query.id || req.body.id;
     const type = req.body.type || req.body.topic || req.query.type || req.query.topic

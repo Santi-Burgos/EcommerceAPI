@@ -1,7 +1,7 @@
 import express from 'express';
 import { deleteProductCartController, editItemCartController, insertProductCartController } from '../controllers/cart.controller.js';
 import { authToken } from '../middlewares/auth.middleware.js';
-import { deleteItemCartView, pushToCartView } from '../views/cart.views.js';
+import { deleteItemCartView, pushToCartView, editItemCartView } from '../views/cart.views.js';
 
 
 
@@ -16,9 +16,7 @@ cartRoutes.post('/push-to-cart/:id', authToken, async(req, res, next)=>{
 cartRoutes.put('/edit-item-cart/:id', authToken, async(req, res, next)=>{
     const result = await editItemCartController(req)
     editItemCartView(result, res)
-}
-)
-
+})
 
 cartRoutes.delete('/delete-item-cart/:id', authToken, async(req, res, next)=>{
     const result = await deleteProductCartController(req)

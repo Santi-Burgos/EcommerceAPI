@@ -22,7 +22,9 @@ export const createTicketController = async(req) => {
             }
         };
     }
-}
+} 
+
+//admin 
 
 export const openTicketRoomController = async(req) => {
     try {
@@ -51,5 +53,31 @@ export const openTicketRoomController = async(req) => {
                 stack: err.stack
             }
         };
+    }
+}
+
+// los dos, anahdir un trigger
+export const messagesTicketRoom = async(req) =>{
+    try{
+        const isAdmin = req.user.idRol || null;
+        const senderID = req.user.idUser
+        const {messageTicket, ticketRoomID} = req.body;
+
+        const safeSender = await Ticket.messagesRoom(messageTicket, isAdmin, senderID, ticketRoomID)
+
+        return{
+            success: true, 
+            message: ('Mesanje almacenado'),
+            data: safeSender
+        }
+    }catch(err){
+        return{
+            success: false,
+            error: {
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
     }
 }

@@ -11,7 +11,8 @@ const router = express.Router();
 router.use('/client', clientRoutes);
 router.use('/client/cart', cartRoutes)
 
-router.use('/ticket', ticketRoutes);
+router.use('/client/ticket', ticketRoutes);
+router.use('/admin/ticket', ticketRoutes)
 
 router.use('/payment', paymentRoutes)
 
@@ -20,3 +21,4 @@ router.use('/admin', adminRoutes);
 router.use('/admin/product', productRoutes)
 
 export default router;
+

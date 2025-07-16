@@ -53,4 +53,9 @@ export const deleteAddressStreetView = (result, res) =>{
             stack: result.error?.stack
         });
     }
+
+     return res.status(200).json({
+        message: 'Street address delete succesfully',
+        data: result.data
+    })
 }

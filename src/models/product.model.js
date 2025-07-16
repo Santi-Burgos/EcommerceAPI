@@ -37,6 +37,9 @@ class Product{
 
     }
 
+    static async editProduct(){
+          
+    }
 
     static async deleteProductModel(productID){
         try{
