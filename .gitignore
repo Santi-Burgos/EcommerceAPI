@@ -1,5 +1,5 @@
 .env
 node_modules
-src/upload
+src/uploads
 ngrok.exe
 test.js
