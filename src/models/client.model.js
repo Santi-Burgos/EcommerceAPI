@@ -2,6 +2,8 @@ import  connection  from "../config/database.js";
 import { buildDynamicUpdateQuery } from "../helper/dinamicQuery.helper.js";
 
 class Client{
+
+    // create the cliente and post profile pic
     static async createClientAccount({nameClient, lastNameClient, addressMailClient, passwordClientHashed, numberPhoneClient, imgUrl, imgName}){
         const conn = await connection.getConnection();
         try{
@@ -32,7 +34,7 @@ class Client{
             conn.release();
         }
     }
-
+    // Only update client
     static async editClientAccount(clientToEdit, clientID){
         try{   
             const fullDataToUpdate = { ...clientToEdit, idClient: clientID};
@@ -47,6 +49,7 @@ class Client{
         }
     }
 
+    //delete all relations whit client
     static async deleteAccountClient(clientID){
         try{
             const deleteAccount = 'DELETE FROM client WHERE idClient = ?';
@@ -57,6 +60,31 @@ class Client{
             }
         }catch(error){
             throw new Error('Error al editar cliente');
+        }
+    }
+    static async findClientByEmail(addressMailClient){
+        try{
+        const searchByEmail = 'SELECT * FROM client WHERE addressMailClient = ?'
+        const [rows] = await connection.query(searchByEmail, [addressMailClient]);
+        return{
+                success: true,
+                data: rows[0]
+            }
+        }catch(error){
+            throw new Error('Error al realizar esta peticion:' + error.message)
+        }
+    }
+
+    static async findClientById(clientID){
+        try{
+            const searchById = 'SELECT * FROM client WHERE idClient =?';
+            const [rows] = await connection.query(searchById, clientID);
+            return{
+                success: true,
+                data: rows[0]
+            }
+        }catch(error){
+            throw new Error('Error al realizar esta peticion:' + error.message)
         }
     }
 }

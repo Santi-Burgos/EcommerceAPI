@@ -8,7 +8,7 @@ import { deleteItemCartView, pushToCartView, editItemCartView } from '../views/c
 const cartRoutes = express.Router();
 
 
-cartRoutes.post('/push-to-cart/:id', authToken, async(req, res, next)=>{
+cartRoutes.post('/push-to-cart/:id', authToken, /*anhadir middleware para validar existencia del product*/async(req, res, next)=>{
     const result = await insertProductCartController(req)
     pushToCartView(result, res)
 })

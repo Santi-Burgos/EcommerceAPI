@@ -1,7 +1,7 @@
-import { connect } from "http2";
 import connection from "../config/database.js";
 
 class TargetCart{
+
     static async selectCartForPay(clientID){
         try{
             const querySelectCart = 'SELECT product.idProduct, product.sku, product.productName, product.productDescription, product.productPrice, cart.quantityCart FROM cart INNER JOIN product ON product.idProduct = cart.idProduct WHERE cart.idClient = ?';
@@ -136,19 +136,6 @@ class TargetCart{
             return rows[0]
         }catch(error){
             throw new Error('Error al buscar al payerID' + error.message)
-        }
-    }
-
-    static async checkPriceProduct(productID, productPrice){
-        try{
-            const queryCheckPrice = 'SELECT productPrice FROM product WHERE idProduct = ?'
-            const [rows] = await connection.query(queryCheckPrice, [productID])
-            if(rows.length === 0) {
-                return false
-            }
-            return rows[0].productPrice === productPrice
-        }catch(error){
-            throw new Error('Error al verificar el precio del producto: ' + error.message)
         }
     }       
 }

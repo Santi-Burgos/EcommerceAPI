@@ -1,14 +1,14 @@
 import bcrypt from 'bcrypt';
 import { tokenGenerate } from "../utils/tokenGenerate.js";
-import Search from '../utils/search.js'
-import SearchAdmin from '../utils/searchForAdmin.js';
+import Client from '../models/client.model.js'
+import Admin from '../models/admin.model.js';
 
 
 export const clientLogin = async(req) =>{
     try{
        
         const {addressMailClient, passwordClient} = req.body;
-        const loginClient = await Search.byEmail(addressMailClient)
+        const loginClient = await Client.findClientByEmail(addressMailClient)
 
         if(!loginClient){
             return {
@@ -46,15 +46,15 @@ export const clientLogin = async(req) =>{
 export const adminLogin = async(req) =>{
     try{
         const {adminAddressMail, passwordAdmin} = req.body;
-        const loginAdmin = await SearchAdmin.byEmail(adminAddressMail);
-
+        const loginAdmin = await Admin.findAdminByEmail(adminAddressMail);
+        
         if(!loginAdmin){
             return{
                 success: false,
                 error: {name: 'Admin not found' }
             }
         }
-
+        
         const isMatch = await bcrypt.compare(passwordAdmin, loginAdmin.data.passwordAdmin)  
         
         if(!isMatch){

@@ -8,7 +8,6 @@ export const createProductController = async(req)=>{
         const images = await mapUploadedImages(req.files);
         const validationProduct = validateProductData(req.body);
 
-
         if(!validationProduct.success){
             return{
                 success: false,
@@ -42,7 +41,6 @@ export const createProductController = async(req)=>{
 
 export const deleteProductController = async (req) =>{
     try{
-
         const productID = req.params.id;
 
         const deleteImg = await deleteImageSelect('imageProduct', 'urlImgProduct', productID, 'idProduct')

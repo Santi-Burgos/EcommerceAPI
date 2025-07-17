@@ -1,6 +1,7 @@
 import connection from "../config/database.js";
 
 class Product{
+    //Create product
     static async createProductModel({Sku, productName, productDescription, productPrice, idStatusProduct, idBrand, idCategory, images, quantity}){
         const conn = await connection.getConnection();
         try{
@@ -9,14 +10,14 @@ class Product{
             const [resultProductInsert] = await conn.query('INSERT INTO `product`(`sku`, `productName`, `productDescription`, `productPrice`, `createAtProduct`, `idStatusProduct`, `idBrand`, `idCategory`) VALUES (?,?,?,?, NOW(),?,?,?)', [Sku, productName, productDescription, productPrice, idStatusProduct, idBrand, idCategory] );
 
             const productID = resultProductInsert.insertId;
-        
+        /// cortar retornar productID
 
             const values = images.map(img => [img.url, img.name, productID]);
 
 
             const sql = 'INSERT INTO imageproduct(urlImgProduct, nameImgProduct, idProduct) VALUES ?';
             await conn.query(sql, [values]);
-
+        
 
             await conn.query(
                 'INSERT INTO `stockproduct`(`quantity`, `idProduct`) VALUES (?,?)',
@@ -36,11 +37,12 @@ class Product{
         }
 
     }
-
+    //edit product
     static async editProduct(){
           
     }
 
+    //delete Product for DB
     static async deleteProductModel(productID){
         try{
             const queryForDelete = 'DELETE FROM `product` WHERE idProduct = ?';
@@ -56,6 +58,30 @@ class Product{
         }
     }
 
+    //check the existence and availability
+    static async productExist(product){
+        try{
+            const existProduct = 'SELECT product.idStatusProduct, statusproduct.statusProduct FROM product JOIN statusproduct ON product.idStatusProduct = statusproduct.idStatusProduct WHERE idProduct = ?'; 
+            const [rows] = await connection.query(existProduct, product);
+            return rows[0] || null
+        }catch(error){
+            throw new Error('Error al verificar existencia del producto' + error.message);
+        }
+    }
+
+    //check the price
+    static async checkPriceProduct(productID, productPrice){
+        try{
+            const queryCheckPrice = 'SELECT productPrice FROM product WHERE idProduct = ?'
+            const [rows] = await connection.query(queryCheckPrice, [productID])
+            if(rows.length === 0) {
+                return false
+            }
+            return rows[0].productPrice === productPrice
+        }catch(error){
+            throw new Error('Error al verificar el precio del producto: ' + error.message)
+        }
+    }
 }
 
 

@@ -1,9 +1,11 @@
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import TargetCart from "../models/payment.model.js";
+import Product from "../models/product.model.js";
 import { config as configDotenv } from 'dotenv';
 import fetch from "node-fetch";
 import Stock from "../models/stock.model.js"
-import { stockAvalible } from "../helper/stockAvailable.helper.js";
+import {verifyProductExist} from "../helper/productExist.helper.js";
+import { stockAvailable } from "../helper/stockAvailable.helper.js";
 
 configDotenv();
 
@@ -15,15 +17,16 @@ export const paymentController = async (req) => {
 
       /* const clientID = req.user.idUser
       const addressMailID = req.body */
-
+      //get all product on the cart
       const queryCart = await TargetCart.selectCartForPay(clientID);
 
-      console.log(queryCart)
-
+      //sum cart prices
       const querySumCart = await TargetCart.totalPrice(clientID)
 
+      //generate the price order
       const priceOrder = querySumCart.totalPrice
       
+      //create order
       const createOrder = await TargetCart.insertOrder(priceOrder, clientID, addressMailID); 
       const orderID = createOrder.orderID
 
@@ -32,8 +35,15 @@ export const paymentController = async (req) => {
       const quantityCart = product.quantityCart
       const productPrice = product.productPrice
       const productID = product.idProduct
-
-      const isPrice = await TargetCart.checkPriceProduct(productID, productPrice)
+      
+        // Validate if the product exists
+      const isProduct = await Product.productExist(productID)
+      const verifyProduct = verifyProductExist(isProduct);
+      if(!verifyProduct){
+          return verifyProduct
+      }
+      //validate if the price is correct
+      const isPrice = await Product.checkPriceProduct(productID, productPrice)
       if(!isPrice){ 
         return {
           success: false,
@@ -42,15 +52,19 @@ export const paymentController = async (req) => {
           }
         }
       }
-      const stock = await stockAvalible(quantityCart, productID)
-      if(!stock){
-        return stock
+      //validate if have stock
+      const stock = await Stock.getStockAvailable(productID)
+      const verifyStock = await stockAvailable(quantityCart, stock)
+      if (!verifyStock) {
+        return verifyStock
       }
-      
+      // create details order
       const details = await TargetCart.insertDetailsOrder(quantityCart, productPrice, orderID, productID)
       
       if(!details) {console.log('no se ha podido crear detalle');}
       else { console.log('detalle creado')}
+
+      //last stock validate and reserved for the transaction
 
       const haveStock = await Stock.reservedStock(quantityCart, productID)
       if(!haveStock.success){
@@ -59,6 +73,9 @@ export const paymentController = async (req) => {
         console.log(haveStock.message)
       }
     } 
+
+    //Mercado pago configs
+
         const client = new MercadoPagoConfig({
                 accessToken: process.env.MERCADOPAGO_API_KEY,
                 options: { timeout: 5000 }

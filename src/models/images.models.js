@@ -1,6 +1,7 @@
 import connection from "../config/database.js";
 
 class Images {
+    //Only update profile image
     static async editProfileImage(imgName, imgUrl, clientID){
         try{
             const changeProfileimg = 'UPDATE `imageclient` SET `imgUrl`=?,`imgName`=? WHERE idClient = ?'
@@ -17,7 +18,7 @@ class Images {
             throw new Error('Error al cambiar imagen de perfil' + error.messsage)
         }
     }
-
+    //Only update product images
     static async editProductImage({images, idProduct, idImgProduct}){
         try{
                 const values = images.map((img, i) => [
