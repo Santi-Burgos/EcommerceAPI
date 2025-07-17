@@ -2,9 +2,6 @@ import connection from '../config/database.js'
 
 export async function requieredPermission(permission, rolID){
     try{
-
-        console.log('idRol: ',rolID)
-
         const queryPermissions = 'SELECT rolpermissions.idRol, rolpermissions.idPermissions, `adminpermissions`.permissionsName FROM `rolpermissions` INNER JOIN adminpermissions ON rolpermissions.idPermissions = adminpermissions.idPermissions WHERE idRol = ?'  
 
         const [rows] = await connection.query(queryPermissions, rolID);
