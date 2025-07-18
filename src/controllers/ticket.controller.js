@@ -4,15 +4,17 @@ export const createTicketController = async(req) => {
     try {
         const clientID = req.user.idUser;
         const { descriptionTicket, productID } = req.body;
+
+        const validateTicket = await Ticket.validateIfTicketExists(productID, clientID)
+        if(validateTicket){
+            return{
+                success: false,
+                message: 'ya existe el ticket, aguarde a que te respondan'
+            }
+        }   
+
         const createTicket = await Ticket.createTicket(descriptionTicket, productID, clientID);
         
-        if (!createTicket.success) {
-            return {
-                success: false,
-                error: createTicket.error
-            };
-        }
-
         return{
             success: true,
             data: createTicket
@@ -34,19 +36,10 @@ export const createTicketController = async(req) => {
 export const openTicketRoomController = async(req) => {
     try {
         const  ticketID  = req.body.ticketId;
-        const adminID = req.user.idUser;
-        
+        const adminID = req.user.idUser;        
 
         const ticketRoom = await Ticket.createTicketRoom(ticketID, adminID);
 
-
-        
-        if (!ticketRoom.success) {
-            return {
-                success: false,
-                error: ticketRoom.error
-            };
-        }
         
         return {
             success: true,

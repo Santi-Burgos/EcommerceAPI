@@ -62,6 +62,16 @@ class Ticket{
             throw new Error('Error al cambiar el estado del ticket' + error.message)
         }
     }
+
+    static async validateIfTicketExists(productID, clientID){
+        try{
+            const queryTicketExists = 'SELECT * FROM ticket WHERE idProduct = ? AND idClient = ?'
+            const [rows] = await connection.query(queryTicketExists, [productID, clientID])
+            return rows.length >  0
+        }catch(error){
+            throw new Error('Error al validar existencia estado del ticket' + error.message)
+        }
+    }
 }
 
 export default Ticket
