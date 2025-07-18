@@ -37,6 +37,19 @@ class Product{
         }
 
     }
+    static async getListProductModel(){
+        try{
+        const getProduct = 'SELECT product.idProduct, product.sku, product.productName, product.productDescription, product.productPrice, product.createAtProduct ,brand.brand, category.category FROM `product` INNER JOIN `brand` ON product.idBrand = brand.idBrand INNER JOIN `category` ON product.idCategory = category.idCategory;'
+        const resultGetProduct = await connection.query(getProduct)
+        return{
+            data: resultGetProduct
+        }
+        }catch(error){
+                console.error(error)
+                throw new Error('Error al eliminar producto' + error.message)
+        }
+    }
+
     //edit product
     static async editProduct(){
           

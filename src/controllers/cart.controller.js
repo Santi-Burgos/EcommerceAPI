@@ -20,11 +20,10 @@ export const insertProductCartController = async(req) =>{
         }
 
         // Check if the product has stock available
-        const theresStock = stockAvailable(quantityCart, productID);
-        if(!theresStock){
-            return{
-                data: theresStock
-            }
+        const stock = await Stock.getStockAvailable(productID)
+        const verifyStock = await stockAvailable(quantityCart, stock)
+        if (!stock.available) {
+            return verifyStock
         }
         // Add the product to the cart
         const addToCart = await Cart.createCart(quantityCart, productID, clientID)

@@ -39,6 +39,28 @@ export const createProductController = async(req)=>{
     }
 }
 
+export const getProductController = async()=>{
+    try{
+        const getListProduct = await Product.getListProductModel();
+        return{
+           success: true,
+            data: getListProduct
+        }
+
+    }catch(err){
+        return{
+            success: false,
+            error:{
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
+}
+
+
+
 export const deleteProductController = async (req) =>{
     try{
         const productID = req.params.id;

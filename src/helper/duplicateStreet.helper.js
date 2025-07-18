@@ -1,7 +1,7 @@
 import connection from "../config/database.js";
 
 export async function verifyDuplicateStreet(clientID, data) {
-  const searchAllAddress = 'SELECT * FROM addressclient WHERE idClient = ?';
+  const searchAllAddress = 'SELECT * FROM addressclient WHERE idClient = ?'; //quitar query
   const [addresses] = await connection.query(searchAllAddress, [clientID]);
 
 

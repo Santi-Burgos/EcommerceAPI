@@ -41,3 +41,15 @@ export const deleteProductView = (result, res) =>{
     data: result.data
   })
 }
+export const listProductView = (result, res) =>{
+    if(!result.success){
+    return res.status(500).json({
+      message: 'No se ha podido obtener la lista', 
+      details: result.error?.message || JSON.stringify(result.error)
+    });
+  }
+
+  return res.status(200).json({message: 'Lista obtenida con exito',
+    data: result.data
+  })
+}

@@ -1,7 +1,7 @@
 import express from 'express'
-import { createProductController, deleteProductController } from "../controllers/product.controller.js";
+import { createProductController, getProductController,deleteProductController } from "../controllers/product.controller.js";
 import {editProductImgController} from '../controllers/imagesEdit.controller.js'
-import { createProductView, changeProductImageView, deleteProductView } from '../views/product.view.js';
+import { createProductView, changeProductImageView, deleteProductView, listProductView } from '../views/product.view.js';
 import { upload } from '../middlewares/upload.middleware.js';
 import { requieredPermission } from '../middlewares/requiredPermission.middleware.js';
 import { authToken } from '../middlewares/auth.middleware.js';
@@ -21,6 +21,14 @@ productRoutes.post(
         await requieredPermission('product_upload', req.user.idRol)
         const result = await createProductController(req)
         createProductView(result, res)
+    }
+)
+
+productRoutes.get(
+    '/product-list', authToken, async(req, res, next)=>{
+        await requieredPermission('view_product', req.user.idRol)
+        const result = await getProductController(req)
+        listProductView(result, res)
     }
 )
 

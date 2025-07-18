@@ -31,7 +31,6 @@ export const createTicketController = async(req) => {
 } 
 
 //admin 
-
 export const openTicketRoomController = async(req) => {
     try {
         const  ticketID  = req.body.ticketId;
