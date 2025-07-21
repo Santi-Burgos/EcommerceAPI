@@ -2,6 +2,7 @@ import connection from "../config/database.js";
 import { buildDynamicUpdateQuery } from "../helper/dinamicQuery.helper.js";
 
 class Admin{
+
     static async createAdminAccount ({adminName, adminAddressMail, passwordAdminHashed, idRol}){
         try{
             const createAdmin = 'INSERT INTO `useradmin`(`adminName`, `adminAddressMail`, `passwordAdmin`, `idRol`) VALUES (?,?,?,?)'
@@ -16,6 +17,16 @@ class Admin{
             throw new Error('Error al crear user admin' + error.message)
         }
     }
+    static async getAllAdmins(){
+        try{
+            const getAdmins = 'SELECT idAdmin, adminName, adminAddressMail FROM `useradmin`'
+            const [rows] = await connection.query(getAdmins);
+            return rows
+        }catch(error){
+            throw new Error('Error al obtener todos los admins' + error.message)
+        }
+    }
+
 
     static async editAdminAccount(adminToEdit, adminID){
         try{

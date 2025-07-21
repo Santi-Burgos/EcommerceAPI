@@ -43,7 +43,7 @@ export const clientLogin = async(req) =>{
     }
 }
 
-export const adminLogin = async(req) =>{
+export const adminLoginController = async(req) =>{
     try{
         const {adminAddressMail, passwordAdmin} = req.body;
         const loginAdmin = await Admin.findAdminByEmail(adminAddressMail);

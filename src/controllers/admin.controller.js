@@ -95,3 +95,22 @@ export const deleteAdminUserController = async(req) =>{
         }
     }
 }
+
+export const getAllAdminsController = async() =>{
+    try{
+        const getAdmins = await Admin.getAllAdmins();
+        return{
+            success: true,
+            data: getAdmins
+        }
+    }catch(err){
+        return{
+            success: false,
+            error:{
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack 
+            }
+        }
+    }
+}

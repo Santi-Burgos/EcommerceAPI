@@ -24,6 +24,8 @@ export async function deleteImageSelect(table, valueSelect, data, idField, extra
         const querySelect = `SELECT \`${valueSelect}\` FROM \`${table}\` WHERE  ${whereClause}`
 
         const [rows] = await connection.query(querySelect, values)
+
+        // sacar el query builder, dejar solo la funcion de abajo
         
         const uploadsFolder = path.resolve(process.env.PATH_UPLOADS);
 

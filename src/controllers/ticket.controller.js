@@ -39,7 +39,6 @@ export const openTicketRoomController = async(req) => {
         const adminID = req.user.idUser;        
 
         const ticketRoom = await Ticket.createTicketRoom(ticketID, adminID);
-
         
         return {
             success: true,

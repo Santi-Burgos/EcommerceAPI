@@ -47,3 +47,15 @@ export const deleteAdminUserView = (result, res) =>{
     data: result.data
   })
 }
+
+export const getAdminsView = (result, res) =>{
+  if(!result.success){
+    return res.status(500).json({
+      message: "Error obtener administradores",
+      details: result.error?.message || JSON.stringify(result.error)
+    })
+  }
+  return res.status(200).json({
+    data: result.data
+  })
+}

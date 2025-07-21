@@ -102,7 +102,7 @@ export const deleteProductCartController = async(req) =>{
                 name: err.name || 'InternalError',
                 message: err.message||'Unexpected error',
                 stack: err.stack
-            }
+            } 
         }
     }
 }
