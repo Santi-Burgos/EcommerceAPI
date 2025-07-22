@@ -64,7 +64,7 @@ export const getMyTicketView = (result, res) =>{
     })
 }
 
-export const getAllTickets = (result, res) =>{
+export const getAllTicketsView = (result, res) =>{
     if(!result.success){
         return res.status(500).json({
             name: result.error?.name,

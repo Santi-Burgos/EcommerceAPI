@@ -38,3 +38,16 @@ export const deleteItemCartView = (result, res) =>{
         data: result.data
     })
 }
+
+export const getMyCartView = (result, res) =>{
+    if(!result.success){
+        return res.status(500).json({
+            message: 'Error al obtener carrito',
+            details: result.error?.issues || JSON.stringify(result.error)
+        })
+    }
+    return res.status(200).json({
+        message: 'Get cart successfully',
+        data: result.data
+    })
+}

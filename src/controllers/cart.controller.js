@@ -42,6 +42,29 @@ export const insertProductCartController = async(req) =>{
         }
     }
 }
+
+export const getMyCartController = async(req)=>{
+    try{
+        const clientID = req.user.idUser; 
+        const getMyCart = await Cart.getProductCart(clientID);
+        return{
+            success: true,
+            data: getMyCart
+        }
+
+
+    }catch(err){
+       return{
+            success: false,
+            error: {
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
+}
+
 export const editItemCartController = async(req)=>{
     try{
         const {quantityCart, cartID} = req.body;

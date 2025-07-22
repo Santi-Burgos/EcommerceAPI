@@ -45,7 +45,15 @@ class Cart{
         }
     }
     
-
+    static async getProductCart(clientID){
+        try{
+            const queryGetCart = 'SELECT * FROM cart WHERE idClient = ?'
+            const [getCart] = await connection.query(queryGetCart, [clientID])
+            return getCart
+        }catch(error){
+            throw new Error('Error al obtener los productos de tu carro' + error.message)
+        }
+    }
 }
 
 
