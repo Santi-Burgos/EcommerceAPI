@@ -1,3 +1,4 @@
+import { _catch } from 'zod/v4/core';
 import connection from '../config/database.js';
 import { buildDynamicUpdateQuery } from '../helper/dinamicQuery.helper.js';
 
@@ -14,6 +15,17 @@ class StreetAddress {
             }
         }catch(error){ 
             throw new Error('Error al crear address street' + error.message)
+        }
+    }
+
+    static async getAllMyAddress(clientID){
+        try{
+            const queryGetAddress = 'SELECT idAddressClient, mainStreet, crossStreet, addressNumber, floorDepto FROM addressClient WHERE idClient = ?'
+            const [resultGetAddress] = await connection.query(queryGetAddress, clientID)
+            return resultGetAddress
+
+        }catch(error){
+            throw new Error('Error al obtener address' + error.message)
         }
     }
 

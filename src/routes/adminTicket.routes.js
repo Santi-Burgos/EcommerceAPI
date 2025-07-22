@@ -1,6 +1,6 @@
 import express from 'express';
 import { requieredPermission } from '../middlewares/requiredPermission.middleware.js';
-import { messagesTicketRoomController, openTicketRoomController } from '../controllers/ticket.controller.js';
+import { getAllTicketsController, messagesTicketRoomController, openTicketRoomController } from '../controllers/ticket.controller.js';
 import { authToken } from '../middlewares/auth.middleware.js';
 import { messagesTicketRoomView, openTicketRoomView } from '../views/ticket.view.js';
 
@@ -11,6 +11,14 @@ ticketAdminRoutes.post('/create-room-ticket', authToken, async(req, res, next) =
     await requieredPermission('ticket_response',req.user.idRol)
     const result = await openTicketRoomController(req)
     openTicketRoomView(result, res)
+})
+
+
+//create getTicketsAll
+ticketAdminRoutes.get('/get-all-tickets', authToken, async(req, res, next)=>{
+    await requieredPermission('',req.user.idRol)
+    const result = await getAllTicketsController(req)
+    
 })
 
 ticketAdminRoutes.post('/ticket-room/:roomId', authToken, async(req, res, next) =>{

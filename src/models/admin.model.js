@@ -17,6 +17,7 @@ class Admin{
             throw new Error('Error al crear user admin' + error.message)
         }
     }
+    
     static async getAllAdmins(){
         try{
             const getAdmins = 'SELECT idAdmin, adminName, adminAddressMail FROM `useradmin`'

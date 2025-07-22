@@ -56,6 +56,7 @@ export const getAdminsView = (result, res) =>{
     })
   }
   return res.status(200).json({
+    message: 'Get all Admins succesfully',
     data: result.data
   })
 }

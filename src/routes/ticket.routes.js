@@ -1,7 +1,7 @@
 import express from 'express';
-import {createTicketController, messagesTicketRoomController} from "../controllers/ticket.controller.js";
+import {createTicketController, getMyTicketsController, messagesTicketRoomController} from "../controllers/ticket.controller.js";
 import { authToken } from '../middlewares/auth.middleware.js';
-import { createTicketView, messagesTicketRoomView } from '../views/ticket.view.js';
+import { createTicketView, getMyTicketView, messagesTicketRoomView } from '../views/ticket.view.js';
 
 
 const ticketRoutes = express.Router();
@@ -16,6 +16,10 @@ ticketRoutes.post('/ticket-room/:roomId', authToken, async(req, res, next) =>{
     messagesTicketRoomView(result, res)
 })
 
+ticketRoutes.get('/get-my-tickets', authToken, async(req, res, next) =>{
+    const result = await getMyTicketsController(req);
+    getMyTicketView(result, res)
+})
 
 
 export default ticketRoutes

@@ -58,3 +58,4 @@ export const deleteAccountClientView = (result, res)=>{
     data: result.data
   })
 }
+

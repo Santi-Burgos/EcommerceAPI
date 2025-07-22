@@ -32,6 +32,26 @@ class Ticket{
         }
     }
 
+    static async getMyTickets(clientID){
+        try{
+            const queryGetMyTickets = 'SELECT * FROM tickets WHERE idClient = ?';
+            const [rows] = await connection.query(queryGetMyTickets, clientID)
+            return rows
+        }catch(error){
+            throw new Error('Error al obtener mis tickets' + error.message)
+        }
+    }
+
+    static async getAllTickets(){
+        try{
+            const queryGetAllTickets = 'SELECT * FROM tickets';
+            const [rows] = await connection.query(queryGetAllTickets)
+            return rows
+        }catch(error){
+            throw new Error('Error al obtener los tickets' + error.message)
+        }  
+    }
+
     //Sale de message por el ticket
     static async messagesRoom(messageTicket, isAdmin, senderID, ticketRoomID){
         try{

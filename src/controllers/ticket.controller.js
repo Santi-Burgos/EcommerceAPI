@@ -55,6 +55,46 @@ export const openTicketRoomController = async(req) => {
         };
     }
 }
+export const getMyTicketsController = async(req) =>{
+    try{
+        const clientID = req.user.idUser;
+        const resultGetTicket = await Ticket.getMyTickets(clientID)
+        return{
+            success: true, 
+            data: resultGetTicket
+        }
+
+    }catch(err){
+        return{
+            success: false,
+            error: {
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
+}
+
+export const getAllTicketsController = async(req) =>{
+    try{
+        //request recibe los parametros de limits
+        const getTickets = await Ticket.getAllTickets();
+        return{
+            success: true,
+            data: getTickets
+        }
+    }catch(err){
+        return{
+            success: false,
+            error: {
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
+}
 
 // los dos, anahdir un trigger
 export const messagesTicketRoomController = async(req) =>{

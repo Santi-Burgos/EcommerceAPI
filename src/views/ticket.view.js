@@ -46,3 +46,37 @@ export const messagesTicketRoomView = (result, res) =>{
         data: result.data
     })
 }
+
+export const getMyTicketView = (result, res) =>{
+    if(!result.success){
+       return res.status(500).json({
+            name: result.error?.name,
+            error: result.error,
+            message: result.error?.message || "Error al obtener mis tickets",
+            issues: result.error?.issues,
+            stack: result.error?.stack
+      }) 
+    }
+
+    return res.status(200).json({
+        message: 'Get tickets succesfully',
+        data: result.data
+    })
+}
+
+export const getAllTickets = (result, res) =>{
+    if(!result.success){
+        return res.status(500).json({
+            name: result.error?.name,
+            error: result.error,
+            message: result.error?.message || "Error al obtener tickets",
+            issues: result.error?.issues,
+            stack: result.error?.stack
+      }) 
+    }
+
+    return res.status(200).json({
+        message: 'Get all tickets succesfully',
+        data: result.data
+    })
+}

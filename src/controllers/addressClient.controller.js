@@ -57,6 +57,27 @@ export const createAddressClientController = async(req) =>{
     }
 }
 
+export const getAddressController = async(req)=>{
+    try{
+        const clientID = req.user.idUser
+        const getAddress = await StreetAddress.getAllMyAddress(clientID);
+
+        return{
+            success: true,
+            data: getAddress
+        }
+    }catch(err){
+        return{
+            sucecss: false,
+            error: {
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
+    }
+}   
+
 export const editAddressStreetController = async(req) =>{
     try{
         const validationEditAddress = validateEditAddress(req.body);
