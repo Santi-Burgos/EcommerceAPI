@@ -4,3 +4,4 @@ export const mapUploadedImages = async(files) => {
     url: `http://localhost:3000/uploads/products/${file.filename}`
   }));
 };
+

@@ -1,26 +1,26 @@
 import Ticket from "../models/tickets.model.js";
 
-export const createTicketController = async(req) => {
+export const createTicketController = async (req) => {
     try {
         const clientID = req.user.idUser;
         const { descriptionTicket, productID } = req.body;
 
         const validateTicket = await Ticket.validateIfTicketExists(productID, clientID)
-        if(validateTicket){
-            return{
+        if (validateTicket) {
+            return {
                 success: false,
                 message: 'ya existe el ticket, aguarde a que te respondan'
             }
-        }   
+        }
 
         const createTicket = await Ticket.createTicket(descriptionTicket, productID, clientID);
-        
-        return{
+
+        return {
             success: true,
             data: createTicket
         }
 
-    }catch(err){
+    } catch (err) {
         return {
             success: false,
             error: {
@@ -30,16 +30,16 @@ export const createTicketController = async(req) => {
             }
         };
     }
-} 
+}
 
 //admin 
-export const openTicketRoomController = async(req) => {
+export const openTicketRoomController = async (req) => {
     try {
-        const  ticketID  = req.body.ticketId;
-        const adminID = req.user.idUser;        
+        const ticketID = req.body.ticketId;
+        const adminID = req.user.idUser;
 
         const ticketRoom = await Ticket.createTicketRoom(ticketID, adminID);
-        
+
         return {
             success: true,
             data: ticketRoom.data
@@ -55,17 +55,17 @@ export const openTicketRoomController = async(req) => {
         };
     }
 }
-export const getMyTicketsController = async(req) =>{
-    try{
+export const getMyTicketsController = async (req) => {
+    try {
         const clientID = req.user.idUser;
         const resultGetTicket = await Ticket.getMyTickets(clientID)
-        return{
-            success: true, 
+        return {
+            success: true,
             data: resultGetTicket
         }
 
-    }catch(err){
-        return{
+    } catch (err) {
+        return {
             success: false,
             error: {
                 name: err.name || 'InternalError',
@@ -76,16 +76,16 @@ export const getMyTicketsController = async(req) =>{
     }
 }
 
-export const getAllTicketsController = async(req) =>{
-    try{
+export const getAllTicketsController = async (req) => {
+    try {
         //request recibe los parametros de limits
         const getTickets = await Ticket.getAllTickets();
-        return{
+        return {
             success: true,
             data: getTickets
         }
-    }catch(err){
-        return{
+    } catch (err) {
+        return {
             success: false,
             error: {
                 name: err.name || 'InternalError',
@@ -97,21 +97,23 @@ export const getAllTicketsController = async(req) =>{
 }
 
 // los dos, anahdir un trigger
-export const messagesTicketRoomController = async(req) =>{
-    try{
-        const isAdmin = req.user.idRol || null;
-        const senderID = req.user.idUser
-        const {messageTicket, ticketRoomID} = req.body;
+export const messagesTicketRoomController = async (req) => {
+    try {
+        const isAdmin = req.user.idRol;
+        (!isAdmin) ? true : false;
 
-        const safeSender = await Ticket.messagesRoom(messageTicket, isAdmin, senderID, ticketRoomID)
+        const senderID = req.user.idUser;
+        const { messageTicket, ticketRoomID } = req.body;
 
-        return{
-            success: true, 
+        const safeSender = await Ticket.messagesRoom(messageTicket, isAdmin, senderID, ticketRoomID);
+
+        return {
+            success: true,
             message: ('Mesanje almacenado'),
             data: safeSender
         }
-    }catch(err){
-        return{
+    } catch (err) {
+        return {
             success: false,
             error: {
                 name: err.name || 'InternalError',

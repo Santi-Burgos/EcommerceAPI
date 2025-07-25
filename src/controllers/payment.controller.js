@@ -4,47 +4,47 @@ import Product from "../models/product.model.js";
 import { config as configDotenv } from 'dotenv';
 import fetch from "node-fetch";
 import Stock from "../models/stock.model.js"
-import {verifyProductExist} from "../helper/productExist.helper.js";
+import { verifyProductExist } from "../helper/productExist.helper.js";
 import { stockAvailable } from "../helper/stockAvailable.helper.js";
 
 configDotenv();
 
 export const paymentController = async (req) => {
-    try {
+  try {
 
-      const clientID = 12;
-      const addressMailID = 41;
+    const clientID = 12;
+    const addressMailID = 41;
 
-      /* const clientID = req.user.idUser
-      const addressMailID = req.body */
-      //get all product on the cart
-      const queryCart = await TargetCart.selectCartForPay(clientID);
+    /* const clientID = req.user.idUser
+    const addressMailID = req.body */
+    //get all product on the cart
+    const queryCart = await TargetCart.selectCartForPay(clientID);
 
-      //sum cart prices
-      const querySumCart = await TargetCart.totalPrice(clientID)
+    //sum cart prices
+    const querySumCart = await TargetCart.totalPrice(clientID)
 
-      //generate the price order
-      const priceOrder = querySumCart.totalPrice
-      
-      //create order
-      const createOrder = await TargetCart.insertOrder(priceOrder, clientID, addressMailID); 
-      const orderID = createOrder.orderID
+    //generate the price order
+    const priceOrder = querySumCart.totalPrice
 
-      for(const product of queryCart){
+    //create order
+    const createOrder = await TargetCart.insertOrder(priceOrder, clientID, addressMailID);
+    const orderID = createOrder.orderID
+
+    for (const product of queryCart) {
 
       const quantityCart = product.quantityCart
       const productPrice = product.productPrice
       const productID = product.idProduct
-      
-        // Validate if the product exists
+
+      // Validate if the product exists
       const isProduct = await Product.productExist(productID)
       const verifyProduct = verifyProductExist(isProduct);
-      if(!verifyProduct){
-          return verifyProduct
+      if (!verifyProduct) {
+        return verifyProduct
       }
       //validate if the price is correct
       const isPrice = await Product.checkPriceProduct(productID, productPrice)
-      if(!isPrice){ 
+      if (!isPrice) {
         return {
           success: false,
           error: {
@@ -60,28 +60,34 @@ export const paymentController = async (req) => {
       }
       // create details order
       const details = await TargetCart.insertDetailsOrder(quantityCart, productPrice, orderID, productID)
-      
-      if(!details) {console.log('no se ha podido crear detalle');}
-      else { console.log('detalle creado')}
+
+      if (!details) { console.log('no se ha podido crear detalle'); }
+      else { console.log('detalle creado') }
 
       //last stock validate and reserved for the transaction
 
       const haveStock = await Stock.reservedStock(quantityCart, productID)
-      if(!haveStock.success){
-        console.log(haveStock.message)
-      }else{
-        console.log(haveStock.message)
+      if (!haveStock.affectedRows) {
+        return {
+          success: false,
+          message: 'No se ha podido reservar el stock'
+        }
+      } else {
+        return {
+          success: true,
+          message: 'Se ha podido reservad el stock'
+        };
       }
-    } 
+    }
 
     //Mercado pago configs
 
-        const client = new MercadoPagoConfig({
-                accessToken: process.env.MERCADOPAGO_API_KEY,
-                options: { timeout: 5000 }
-             });
-        const payment = new Preference(client);
-        console.log(process.env.MERCADOPAGO_API_KEY)
+    const client = new MercadoPagoConfig({
+      accessToken: process.env.MERCADOPAGO_API_KEY,
+      options: { timeout: 5000 }
+    });
+    const payment = new Preference(client);
+    console.log(process.env.MERCADOPAGO_API_KEY)
 
     const items = queryCart.map(item => ({
       title: item.productName,
@@ -93,7 +99,7 @@ export const paymentController = async (req) => {
 
     let preference = {
       items: items,
-      back_urls:{
+      back_urls: {
         failure: "http://localhost:3000/api/payment/failure",
         pending: "http://localhost:3000/api/payment/pending",
         success: "http://localhost:3000/api/payment/success",
@@ -101,29 +107,29 @@ export const paymentController = async (req) => {
       notification_url: "https://29bc88c3d95d.ngrok-free.app/api/payment/webhook",
       external_reference: orderID
     };
-    
+
     console.log(preference)
 
-    const resultPayment = await payment.create( {body: preference} );
+    const resultPayment = await payment.create({ body: preference });
     console.log(resultPayment.init_point)
 
 
-    if(resultPayment){
-      return{
+    if (resultPayment) {
+      return {
         success: true
       }
     }
-  }catch(err){
-        return{
-            sucess: false,
-            error:{
-                name: err.name || 'InternalError',
-                message: err.message || 'Unexpected error',
-                stack: err.stack
-            }
-        }
+  } catch (err) {
+    return {
+      sucess: false,
+      error: {
+        name: err.name || 'InternalError',
+        message: err.message || 'Unexpected error',
+        stack: err.stack
+      }
     }
-}; 
+  }
+};
 
 export const receiveWebhook = async (req) => {
   try {
@@ -135,79 +141,79 @@ export const receiveWebhook = async (req) => {
       return { status: 400, body: { error: "Missing ID" } };
     }
 
-    if(type === 'payment'){
-       await safeProcessPayment(id)
-    }else if(type === 'merchant_order'){
+    if (type === 'payment') {
+      await safeProcessPayment(id)
+    } else if (type === 'merchant_order') {
       const moResponse = await fetch(`https://api.mercadopago.com/merchant_orders/${id}`, {
         headers: { Authorization: `Bearer ${process.env.MERCADOPAGO_API_KEY}` }
       })
-      
+
       const merchantOrder = await moResponse.json();
-      if(merchantOrder && merchantOrder.payments && merchantOrder.payments.length > 0){
-        for(const tryPay of merchantOrder.payments){
-          if(tryPay && tryPay.id){
+      if (merchantOrder && merchantOrder.payments && merchantOrder.payments.length > 0) {
+        for (const tryPay of merchantOrder.payments) {
+          if (tryPay && tryPay.id) {
             await safeProcessPayment(tryPay.id)
-          }else{
+          } else {
             console.warn("Payment sin id en merchant_order")
           }
         }
-      }else{
+      } else {
         console.warn("merchant_order sin payment asocia dos")
       }
-    }else{
+    } else {
       console.log("evento ignorado, type:", type)
     }
     console.log("Webhook procesado correctamente")
     return { status: 200, body: { success: true, message: "Procesado correctamente" } }
-  }catch(err){
+  } catch (err) {
     console.error("Error al procesar el webhook", err.message)
-      return { status: 200, body:{success: true, message: "Pago no procesado"}};
+    return { status: 200, body: { success: true, message: "Pago no procesado" } };
 
   }
 
   //mover a otro archivo
 
-async function safeProcessPayment(paymentId) {
-  try {
-    if (!paymentId) {
-      console.warn("Intento de procesar paymentId vacío");
-      return;
-    }
-
-    const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-      headers: {
-        Authorization: `Bearer ${process.env.MERCADOPAGO_API_KEY}`
+  async function safeProcessPayment(paymentId) {
+    try {
+      if (!paymentId) {
+        console.warn("Intento de procesar paymentId vacío");
+        return;
       }
-    });
 
-    const payment = await response.json();
-    if (!payment || !payment.status) {
-      console.warn("payment no encontrado", payment, paymentId);
-      return;
-    }
+      const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+        headers: {
+          Authorization: `Bearer ${process.env.MERCADOPAGO_API_KEY}`
+        }
+      });
 
-    const orderID = payment.external_reference;
-    const paymentStatus = payment.status;
+      const payment = await response.json();
+      if (!payment || !payment.status) {
+        console.warn("payment no encontrado", payment, paymentId);
+        return;
+      }
 
-    if (!payment.payer || !payment.payer.id) {
-      console.warn("payment sin payer válido", payment);
-      return;
-    }
+      const orderID = payment.external_reference;
+      const paymentStatus = payment.status;
 
-    const payerID = payment.payer.id
-    const dataPayer = await TargetCart.findPayerById(payerID)
+      if (!payment.payer || !payment.payer.id) {
+        console.warn("payment sin payer válido", payment);
+        return;
+      }
 
-    if(!dataPayer){
-      const objectPayer = {
-        idPayer: payerID,
-        payerEmail: payment.payer.email,
-        payerFirstName: payment.payer.first_name,
-        payerLastName: payment.payer.last_name,
-        payerIdentification: payment.payer.identification?.number,
-        payerPhone: payment.payer.phone?.number,
-      };
+      const payerID = payment.payer.id
+      const dataPayer = await TargetCart.findPayerById(payerID)
 
-      try {
+      if (!dataPayer) {
+        const objectPayer = {
+          idPayer: payerID,
+          payerEmail: payment.payer.email,
+          payerFirstName: payment.payer.first_name,
+          payerLastName: payment.payer.last_name,
+          payerIdentification: payment.payer.identification?.number,
+          payerPhone: payment.payer.phone?.number,
+        };
+
+        try {
           await TargetCart.insertPayer(objectPayer);
           console.log(`Payer creado: ${payerID}`);
         } catch (err) {
@@ -217,7 +223,7 @@ async function safeProcessPayment(paymentId) {
       } else {
         console.log('Payer existente asociado a la id:', payerID);
       }
-      
+
       const paymentID = payment.id
 
       const existingPayment = await TargetCart.findPaymentById(paymentID);
@@ -235,30 +241,30 @@ async function safeProcessPayment(paymentId) {
           idOrderBuy: orderID,
           idPayer: payerID,
         };
-        
+
         console.log("No existe payment, se va a insertar:", objectPayment);
 
         try {
           await TargetCart.insertPayment(objectPayment);
-        } catch(err){
+        } catch (err) {
           console.error("No se pudo crear el payment:", err.message);
           return;
         }
-      }else{
+      } else {
         console.log("Payment ya existe, no se inserta:", existingPayment);
       }
 
-    if (paymentStatus === 'approved') {
-      await TargetCart.editStatusOrder(2, orderID);
-    } else if (paymentStatus === 'rejected') {
-      await TargetCart.editStatusOrder(3, orderID);
-    }
-    console.log("Payment procesado correctamente");
-    return { success: true, message: "Payment creado correctamente" }
+      if (paymentStatus === 'approved') {
+        await TargetCart.editStatusOrder(2, orderID);
+      } else if (paymentStatus === 'rejected') {
+        await TargetCart.editStatusOrder(3, orderID);
+      }
+      console.log("Payment procesado correctamente");
+      return { success: true, message: "Payment creado correctamente" }
 
-  } catch (err) {
-    console.error("Error al procesar el payment:", err.message);
-    return;
+    } catch (err) {
+      console.error("Error al procesar el payment:", err.message);
+      return;
+    }
   }
-}
 };

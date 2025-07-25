@@ -10,11 +10,11 @@ import ticketAdminRoutes from './adminTicket.routes.js';
 const router = express.Router();
 
 router.use('/client', clientRoutes);
-router.use('/client/cart', cartRoutes)
+router.use('/client/cart', cartRoutes);
 router.use('/client/ticket', ticketRoutes);
 
 
-router.use('/payment', paymentRoutes)
+router.use('/payment', paymentRoutes);
 
 
 router.use('/admin', adminRoutes);

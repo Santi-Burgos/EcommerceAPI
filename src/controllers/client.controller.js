@@ -19,7 +19,7 @@ export const createClientAccountController = async (req) => {
     }
 
     const { passwordClient, ...rest } = validationClientAccount.data;
-
+    
     const passwordClientHashed =  await hashPassword(passwordClient);
     let imgName = req.file ? req.file.filename : null;
     let imgUrl = req.file ? `http://localhost:3000/uploads/profile/${req.file.filename}` : `http://localhost:3000/uploads/default-icon`;
@@ -65,7 +65,6 @@ export const editClientAccountController = async(req) =>{
     const clientID = req.user.idUser
 
     let {passwordClient, ...rest} = validateEditClient.data
-
     
     if(passwordClient){
        passwordClient =  await hashPassword(passwordClient);

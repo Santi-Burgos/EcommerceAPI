@@ -1,84 +1,86 @@
 import connection from "../config/database.js";
 
-class TargetCart{
+class TargetCart {
 
-    static async selectCartForPay(clientID){
-        try{
+    static async selectCartForPay(clientID) {
+        try {
             const querySelectCart = 'SELECT product.idProduct, product.sku, product.productName, product.productDescription, product.productPrice, cart.quantityCart FROM cart INNER JOIN product ON product.idProduct = cart.idProduct WHERE cart.idClient = ?';
             const [rows] = await connection.query(querySelectCart, [clientID]);
-            return  rows
-            
-        }catch(error){
-            throw new Error('Error al seleccionar el carrito' + error.message )
+            return rows
+
+        } catch (error) {
+            throw new Error('Error al seleccionar el carrito' + error.message)
         }
     }
-    static async totalPrice(clientID){
-        try{
+    static async totalPrice(clientID) {
+        try {
             const querySum = 'SELECT SUM(product.productPrice * cart.quantityCart) AS totalPrice FROM cart JOIN product ON cart.idProduct = product.idProduct WHERE cart.idClient = ?'
             const [rows] = await connection.query(querySum, [clientID])
             return rows[0]
 
-        }catch(error){
+        } catch (error) {
             throw new Error('Error al sumar el total del carro' + error.message)
         }
     }
 
-    static async insertOrder(priceOrder, clientID, addressMailID){
-        try{
+    static async insertOrder(priceOrder, clientID, addressMailID) {
+        try {
             const statusOrderID = 1;
             const queryOrderBuy = 'INSERT INTO orderBuy(orderDate, totalPrice, idClient, idAddressClient, idStatusOrder) VALUES (NOW(), ?, ? , ?, ?)'
 
-            const [orderBuy] = await connection.query( queryOrderBuy, [ priceOrder, clientID, addressMailID, statusOrderID]);
+            const [orderBuy] = await connection.query(queryOrderBuy, [priceOrder, clientID, addressMailID, statusOrderID]);
 
             const orderID = orderBuy.insertId;
-            return{
+            return {
                 orderID,
-                message:{ message:
-                    'Order buy create'}
+                message: {
+                    message:
+                        'Order buy create'
+                }
             }
-        }catch(error){
+        } catch (error) {
             throw new Error('Error al crear la orden de compra' + error.message)
         }
     }
 
-    static async insertDetailsOrder(quantityCart, productPrice, orderID, productID){
-        try{
+    static async insertDetailsOrder(quantityCart, productPrice, orderID, productID) {
+        try {
             const queryInsertDetails = 'INSERT INTO orderbuydetails(quantity, priceAtPurchase, idOrderBuy, idProduct) VALUES (?,?,?,?)'
             const [resultQuery] = await connection.query(queryInsertDetails, [quantityCart, productPrice, orderID, productID])
 
-            return{
+            return {
                 success: true,
                 data: resultQuery
             }
-        }catch(error){
+        } catch (error) {
             throw new Error('Error al crear los detalles de la orden', + error.message)
         }
     }
 
-    static async insertPayer(objectPayer){
-        try{
+    static async insertPayer(objectPayer) {
+        try {
             const values = [
-                objectPayer.idPayer, 
-                objectPayer.payerEmail, 
-                objectPayer.payerFirstName, 
-                objectPayer.payerLastName, 
-                objectPayer.payerIdentification, 
+                objectPayer.idPayer,
+                objectPayer.payerEmail,
+                objectPayer.payerFirstName,
+                objectPayer.payerLastName,
+                objectPayer.payerIdentification,
                 objectPayer.payerPhone
             ]
             const queryInsertPayer = 'INSERT INTO  payer(idPayer, payerEmail, payerFirstName, payerLastName, payerIdentification, payerPhone) VALUES(?, ?, ?, ?, ?, ?) '
             const [resultInsertPayer] = await connection.query(queryInsertPayer, values)
             const payerID = resultInsertPayer.insertId;
-            return{
+            return {
                 success: true,
                 data: resultInsertPayer,
                 payerID: payerID
             }
-        }catch(error){
+        } catch (error) {
             throw new Error('Error al crear el payer: ' + error.message)
         }
     }
 
-    static async insertPayment(objectPayment){
+    static async insertPayment(objectPayment) {
         const values = [
             objectPayment.idPayment,
             objectPayment.authorizationCode,
@@ -92,52 +94,52 @@ class TargetCart{
             objectPayment.paymentNetReceivedAmount,
         ]
 
-        try{
+        try {
             const queryInsertPayment = 'INSERT INTO `payment`(`idPayment`, `authorizationCode`, `paymentStatus`, `paymentDetails`, `paymentDateApproved`, `paymentLastFourDigits`, `idPayer`, `idOrderBuy`, `paymentTransactionAmount`, `paymentNetReceivedAmount`) VALUES (?,?,?,?,?,?,?,?,?,?) '
-            const resultInsertPaymet = await connection.query(queryInsertPayment, values)   
+            const resultInsertPaymet = await connection.query(queryInsertPayment, values)
 
-            return{
+            return {
                 success: true,
                 data: resultInsertPaymet
             }
-        }catch(error){
+        } catch (error) {
             throw new Error('Error al crear payment: ' + error.message);
         }
     }
 
-    static async editStatusOrder(statusOrder, orderID){
-        try{
+    static async editStatusOrder(statusOrder, orderID) {
+        try {
             const editStatus = 'UPDATE `orderbuy` SET idStatusOrder = ? WHERE idOrderBuy = ?'
             const resultEditStatus = await connection.query(editStatus, [statusOrder, orderID])
-            
-            return{
+
+            return {
                 success: true,
                 data: resultEditStatus
             }
-        }catch(error){
+        } catch (error) {
             throw new Error('Error al cambiar el estado de la orden' + error.message)
         }
     }
 
-    static async findPaymentById(paymentId){
-        try{
+    static async findPaymentById(paymentId) {
+        try {
             const queryFindPayment = 'SELECT * FROM payment WHERE idPayment = ?'
             const [rows] = await connection.query(queryFindPayment, [paymentId])
             return rows[0]
-        }catch(error){
+        } catch (error) {
             throw new Error('Error al buscar paymentID' + error.message)
         }
     }
 
-    static async findPayerById(payerID){
-        try{
+    static async findPayerById(payerID) {
+        try {
             const queryFindPayer = 'SELECT * FROM payer WHERE idPayer =?'
             const [rows] = await connection.query(queryFindPayer, [payerID])
             return rows[0]
-        }catch(error){
+        } catch (error) {
             throw new Error('Error al buscar al payerID' + error.message)
         }
-    }       
+    }
 }
 
 
