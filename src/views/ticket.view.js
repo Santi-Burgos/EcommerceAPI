@@ -80,3 +80,19 @@ export const getAllTicketsView = (result, res) =>{
         data: result.data
     })
 }
+
+export const ticketResolveView = (result, res) =>{
+    if(!result.access){
+        return res.status(500).json({
+            name: result.error?.name,
+            error: result.error,
+            message: result.error?.message || "Error al resolver ticket",
+            issues: result.error?.issues,
+            stack: result.error?.stack
+        })
+    }
+    return res.status(200).json({
+        message: 'Ticket resolve successfully',
+        data: result.data
+    })
+}

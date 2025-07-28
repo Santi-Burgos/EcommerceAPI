@@ -9,7 +9,7 @@ export const verifyProductExist = async (data) =>{
         if(data.statusProduct === 'Public'){
         return{
             success: true,
-            message: 'Product found'
+            message: `Product found ${data.idProduct}`
         }
         }else{
             return{

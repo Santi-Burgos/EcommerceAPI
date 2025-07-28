@@ -99,8 +99,8 @@ export const getAllTicketsController = async (req) => {
 // los dos, anahdir un trigger
 export const messagesTicketRoomController = async (req) => {
     try {
-        const isAdmin = req.user.idRol;
-        (!isAdmin) ? true : false;
+        let isAdmin = req.user.idRol;
+        isAdmin = (!isAdmin) ? false : true;
 
         const senderID = req.user.idUser;
         const { messageTicket, ticketRoomID } = req.body;
@@ -121,5 +121,25 @@ export const messagesTicketRoomController = async (req) => {
                 stack: err.stack
             }
         }
+    }
+}
+
+export const ticketResolveController = async() =>{
+    try{
+        const changeStatusTicket = await Ticket.changeStatusResolve();
+        return{
+            success: true,
+            data: changeStatusTicket
+        }
+    }catch(err){
+        return{
+            success: false,
+            error: {
+                name: err.name || 'InternalError',
+                message: err.message || 'Unexpected error',
+                stack: err.stack
+            }
+        }
+
     }
 }

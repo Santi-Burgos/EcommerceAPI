@@ -15,3 +15,7 @@ ALTER TABLE `payment` CHANGE `idPayment` `idPayment` BIGINT(11) NOT NULL;
 ALTER TABLE sales DROP CONSTRAINT sales_ibfk_2;
 ALTER TABLE `sales` DROP `idStatusProduct`;
 
+ALTER TABLE `sales` CHANGE `idSales` `idOffert` INT(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `sales` CHANGE `priceSale` `priceOffert` DECIMAL(10,2) NULL DEFAULT NULL;
+RENAME TABLE sales TO offert;
+

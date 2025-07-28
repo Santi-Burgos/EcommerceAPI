@@ -17,6 +17,7 @@ class Ticket{
             throw new Error('Error al crear TicketRoom' + error.message)
         }
     }
+
     //Descripcion general del ticket
     static async createTicket(descriptionTicket, productID, clientID){
         try{
@@ -69,7 +70,7 @@ class Ticket{
 
     //add trigger para que se actualice ticket en dos casos cuando se crea un ticket room y cuando se cambia el estado de ticket room
 
-    static async changeStatusTicket(ticketID){  
+    static async changeStatusResolve(ticketID){  
         try{
             const ticketStatusResolve = 'UPDATE `ticketroom` SET idStatusTicket = 2 WHERE idTicket = ?';
             const statusTicketChange = await connection.query(ticketStatusResolve, ticketID);

@@ -17,6 +17,7 @@ export const paymentController = async (req) => {
 
     /* const clientID = req.user.idUser
     const addressMailID = req.body */
+
     //get all product on the cart
     const queryCart = await TargetCart.selectCartForPay(clientID);
 
@@ -32,6 +33,7 @@ export const paymentController = async (req) => {
 
     for (const product of queryCart) {
 
+      console.log(product)
       const quantityCart = product.quantityCart
       const productPrice = product.productPrice
       const productID = product.idProduct
@@ -39,6 +41,7 @@ export const paymentController = async (req) => {
       // Validate if the product exists
       const isProduct = await Product.productExist(productID)
       const verifyProduct = verifyProductExist(isProduct);
+      console.log(verifyProduct)
       if (!verifyProduct) {
         return verifyProduct
       }
@@ -61,23 +64,21 @@ export const paymentController = async (req) => {
       // create details order
       const details = await TargetCart.insertDetailsOrder(quantityCart, productPrice, orderID, productID)
 
-      if (!details) { console.log('no se ha podido crear detalle'); }
-      else { console.log('detalle creado') }
-
+      if (!details){ 
+        console.log('no se ha podido crear detalle'); 
+      }else { 
+        console.log('detalle creado') 
+      }
       //last stock validate and reserved for the transaction
 
-      const haveStock = await Stock.reservedStock(quantityCart, productID)
-      if (!haveStock.affectedRows) {
+      const haveStock = await Stock.reservedStock(quantityCart, productID);
+
+      if (!haveStock.affectedRows){
         return {
           success: false,
           message: 'No se ha podido reservar el stock'
         }
-      } else {
-        return {
-          success: true,
-          message: 'Se ha podido reservad el stock'
-        };
-      }
+      } 
     }
 
     //Mercado pago configs
@@ -87,7 +88,10 @@ export const paymentController = async (req) => {
       options: { timeout: 5000 }
     });
     const payment = new Preference(client);
-    console.log(process.env.MERCADOPAGO_API_KEY)
+
+    if(process.env.MERCADOPAGO_API_KEY){
+      console.log('Cliente inicilizado');
+    }
 
     const items = queryCart.map(item => ({
       title: item.productName,
@@ -104,7 +108,7 @@ export const paymentController = async (req) => {
         pending: "http://localhost:3000/api/payment/pending",
         success: "http://localhost:3000/api/payment/success",
       },
-      notification_url: "https://29bc88c3d95d.ngrok-free.app/api/payment/webhook",
+      notification_url: "https://e7c940d6e665.ngrok-free.app/api/payment/webhook",
       external_reference: orderID
     };
 
@@ -242,13 +246,17 @@ export const receiveWebhook = async (req) => {
           idPayer: payerID,
         };
 
-        console.log("No existe payment, se va a insertar:", objectPayment);
+        
 
         try {
           await TargetCart.insertPayment(objectPayment);
         } catch (err) {
-          console.error("No se pudo crear el payment:", err.message);
-          return;
+          return{
+            success: false,
+            error: {
+              message: 'No se pudo crear el payment' + err.message
+            }
+          }
         }
       } else {
         console.log("Payment ya existe, no se inserta:", existingPayment);

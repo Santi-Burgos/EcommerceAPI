@@ -74,7 +74,7 @@ class Product{
     //check the existence and availability
     static async productExist(productID){
         try{
-            const existProduct = 'SELECT product.idStatusProduct, statusproduct.statusProduct FROM product JOIN statusproduct ON product.idStatusProduct = statusproduct.idStatusProduct WHERE idProduct = ?'; 
+            const existProduct = 'SELECT product.idProduct, product.idStatusProduct, statusproduct.statusProduct FROM product JOIN statusproduct ON product.idStatusProduct = statusproduct.idStatusProduct WHERE idProduct = ?'; 
             const [rows] = await connection.query(existProduct, productID);
             return rows[0] || null
         }catch(error){

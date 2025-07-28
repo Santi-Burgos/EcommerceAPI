@@ -27,10 +27,10 @@ ticketAdminRoutes.post('/ticket-room/:roomId', authToken, async(req, res, next) 
     messagesTicketRoomView(result, res)
 })
 
-// ticketAdminRoutes.put('/ticket-room-resolve', authToken, async(req, res, next)=>{
-//     await requieredPermission('ticket_resolve', req.user.idRol)
-//     const result = await(req)
-//     //view
-// })
+ticketAdminRoutes.put('/ticket-room-resolve', authToken, async(req, res, next)=>{
+    await requieredPermission('ticket_resolve', req.user.idRol)
+    const result = await ticketResolveController()
+    ticketResolveView(result)
+})
 
 export default ticketAdminRoutes;
