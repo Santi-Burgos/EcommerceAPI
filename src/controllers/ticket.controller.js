@@ -12,14 +12,11 @@ export const createTicketController = async (req) => {
                 message: 'ya existe el ticket, aguarde a que te respondan'
             }
         }
-
         const createTicket = await Ticket.createTicket(descriptionTicket, productID, clientID);
-
         return {
             success: true,
             data: createTicket
         }
-
     } catch (err) {
         return {
             success: false,

@@ -2,7 +2,7 @@ import { verifyToken } from '../utils/decoded.js';
 
 export const authToken = async (req, res, next) => {
 
-    const token = req.cookies.accessToken;
+    const token = req.cookies.accessToken; 
 
     if (!token) {
         return res.status(401).json({
